@@ -70,7 +70,9 @@ export async function getBebidas() {
         ]
         
     return lista_bebidas;
-}export async function getHamburguesa({id}) {
+}
+
+export async function getHamburguesa({id}) {
     const hamburguesas = await getHamburguesas();
     return hamburguesas[id] || null;
 }

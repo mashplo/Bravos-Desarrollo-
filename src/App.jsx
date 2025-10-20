@@ -5,7 +5,6 @@ import Menu from "./pages/menu"
 import Login from "./pages/login"
 import Registrarse from "./pages/registrarse"
 import Pendings from "./pages/pendings"
-import PayOut from "./pages/pay-out"
 import Resenas from "./pages/resenas"
 
 export default function App() {
@@ -18,7 +17,6 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registrarse" element={<Registrarse />} />
         <Route path="/pendings" element={<Pendings />} />
-        <Route path="/pay-out" element={<PayOut />} />
       </Routes>
     </BrowserRouter>
   )

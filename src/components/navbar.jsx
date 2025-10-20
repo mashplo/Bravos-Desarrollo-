@@ -1,4 +1,5 @@
 import { User, LogOut } from "lucide-react"
+
 import Sidebar from "./menu/sidebar"
 import { useState, useEffect } from "react"
 import { obtener_usuario_actual, cerrar_sesion } from "../herramientas/usuario"

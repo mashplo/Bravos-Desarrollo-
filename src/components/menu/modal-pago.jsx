@@ -57,7 +57,7 @@ export default function ModalPago({ carrito_items, total, onCompraExitosa }) {
                         <h4 className="font-semibold mb-2">Resumen de compra</h4>
                         <div className="flex justify-between items-center text-lg">
                             <span>{carrito_items.length} producto(s)</span>
-                            <span className="font-bold">${total.toFixed(2)}</span>
+                            <span className="font-bold">S/{total.toFixed(2)}</span>
                         </div>
                     </div>
 

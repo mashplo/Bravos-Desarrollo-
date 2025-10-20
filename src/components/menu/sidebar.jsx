@@ -85,7 +85,7 @@ export default function Sidebar() {
                             <div className="divider my-2"></div>
                             <div className="flex justify-between items-center text-lg font-bold">
                                 <span>Total:</span>
-                                <span>S/{total.toFixed(2)}</span>
+                                <span>{total.toFixed(2)}</span>
                             </div>
                             <ModalPago 
                                 carrito_items={carrito_items} 
