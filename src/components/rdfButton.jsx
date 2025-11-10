@@ -8,10 +8,12 @@ function DescargaRDF() {
     setLoading(true);
     setError(null);
     
-    try {
-      const url = formato === 'xml' 
-        ? 'http://localhost:3000/api/rdf/xml'
-        : 'http://localhost:3000/api/rdf/turtle';
+try {
+  const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const url = formato === 'xml'
+    ? `${baseURL}/api/rdf/xml`
+    : `${baseURL}/api/rdf/turtle`;
+
       
       const response = await fetch(url);
       
@@ -47,13 +49,15 @@ function DescargaRDF() {
     }
   };
 
-  const abrirRDF = (formato) => {
-    const url = formato === 'xml' 
-      ? 'http://localhost:3000/api/rdf/xml/view'  // Endpoint especial para ver
-      : 'http://localhost:3000/api/rdf/turtle';
-    
-    window.open(url, '_blank');
-  };
+const abrirRDF = (formato) => {
+  const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+  const url = formato === 'xml'
+    ? `${baseURL}/api/rdf/xml/view`
+    : `${baseURL}/api/rdf/turtle`;
+
+  window.open(url, '_blank');
+};
+
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
@@ -103,12 +107,16 @@ function DescargaRDF() {
         </div>
       </div>
       
-      <button
-            onClick={() => window.open(`${import.meta.env.VITE_API_URL}/api/grafo`, '_blank')}
-            className="bg-purple-100 hover:bg-purple-200 text-purple-800 px-6 py-2 rounded border border-purple-300"
-         >
-           Ver Grafo
-        </button>
+<button
+  onClick={() => {
+    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    window.open(`${baseURL}/api/grafo`, '_blank');
+  }}
+  className="bg-purple-100 hover:bg-purple-200 text-purple-800 px-6 py-2 rounded border border-purple-300"
+>
+  Ver Grafo
+</button>
+
 
       {error && (
         <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
