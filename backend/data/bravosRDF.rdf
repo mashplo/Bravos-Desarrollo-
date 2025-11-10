@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:schema="http://schema.org/"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+
+  <schema:Person rdf:about="http://bravos.com/datos/cliente">
+    <foaf:name>NombreDeBaseDatos</foaf:name>
+    <foaf:mbox rdf:resource="mailto:email@basedatos.com"/>
+    <rdfs:label>Cliente de BaseDatos</rdfs:label>
+  </schema:Person>
+
+  <schema:Order rdf:about="http://bravos.com/datos/pedido">
+    <schema:orderDate rdf:datatype="http://www.w3.org/2001/XMLSchema#date">FechaPedidoDatos</schema:orderDate>
+    <schema:customer rdf:resource="http://bravos.com/datos/cliente"/>
+    <schema:orderedItem>
+      <schema:OrderItem rdf:about="http://bravos.com/datos/detalles">
+        <schema:orderQuantity rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</schema:orderQuantity>
+        <schema:itemOffered>
+          <schema:Product rdf:about="http://bravos.com/datos/producto">
+            <schema:name>Hamburguesa</schema:name>
+            <schema:price rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">12.0</schema:price>
+            <rdfs:label>ProductoHamburguesa</rdfs:label>
+          </schema:Product>
+        </schema:itemOffered>
+
+        <rdfs:label>DosProductos</rdfs:label>
+      </schema:OrderItem>
+    </schema:orderedItem>
+
+    <schema:seller>
+      <schema:Person rdf:about="http://bravos.com/datos/admin">
+        <foaf:name>AdminBravos</foaf:name>
+        <schema:email rdf:resource="mailto:admin@bravos.com"/>
+        <rdfs:label>AdminBravos</rdfs:label>
+      </schema:Person>
+    </schema:seller>
+
+    <rdfs:label>Pedido BaseDatos</rdfs:label>
+  </schema:Order>
+
+</rdf:RDF>

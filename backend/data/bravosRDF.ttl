@@ -1,0 +1,37 @@
+@prefix bravos: <http://bravos.com/datos/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix schema: <http://schema.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# Cliente
+bravos:cliente a schema:Person ;
+    foaf:name "NombreDeBaseDatos" ;
+    foaf:mbox <mailto:email@basedatos.com> ;
+    rdfs:label "Cliente de BaseDatos" .
+
+# Pedido
+bravos:pedido a schema:Order ;
+    schema:orderDate "FechaPedidoDatos"^^xsd:date ;
+    schema:customer bravos:cliente ;
+    schema:orderedItem bravos:detalles ;
+    schema:seller bravos:admin ;
+    rdfs:label "Pedido BaseDatos" .
+
+# Producto
+bravos:producto a schema:Product ;
+    schema:name "Hamburguesa" ;
+    schema:price "12"^^xsd:decimal ;
+    rdfs:label "ProductoHamburguesa" .
+
+# Detalles_Pedido
+bravos:detalles a schema:OrderItem ;
+    schema:orderQuantity "2"^^xsd:integer ;
+    schema:itemOffered bravos:producto ;
+    rdfs:label "DosProductos" .
+
+# Administrativo
+bravos:admin a schema:Person ;
+    foaf:name "AdminBravos" ;
+    schema:email <mailto:admin@bravos.com> ;
+    rdfs:label "AdminBravos" .
