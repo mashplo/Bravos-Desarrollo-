@@ -23,6 +23,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Backend funcionando' });
 });
 
+app.get("/", (req, res) => {
+  res.send("✅ Servidor desplegado correctamente en Railway!");
+});
+
 // imagen de grafo
 app.get('/api/grafo', (req, res) => {
 
@@ -120,6 +124,7 @@ app.get('/api/rdf', (req, res) => {
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
 
+app.set("trust proxy", true);
 app.listen(PORT, async () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
   

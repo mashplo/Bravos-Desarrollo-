@@ -104,7 +104,7 @@ function DescargaRDF() {
       </div>
       
       <button
-            onClick={() => window.open('http://localhost:3000/api/grafo', '_blank')}
+            onClick={() => window.open(`${import.meta.env.VITE_API_URL}/api/grafo`, '_blank')}
             className="bg-purple-100 hover:bg-purple-200 text-purple-800 px-6 py-2 rounded border border-purple-300"
          >
            Ver Grafo
