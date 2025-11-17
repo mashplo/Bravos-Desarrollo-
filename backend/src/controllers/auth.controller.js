@@ -48,20 +48,23 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Buscar usuario
-    const user = await User.findOne({ where: { email } });
-
     if (!email || !password) {
       return res.status(400).json({ message: "Faltan datos" });
     }
 
-    if (!user) return res.status(400).json({ message: "Usuario no encontrado" });
+    // Buscar usuario por CORREO (nombre del modelo)
+    const user = await User.findOne({ where: { correo: email } });
 
+    if (!user) {
+      return res.status(400).json({ message: "Usuario no encontrado" });
+    }
+
+    // Comparar contraseña en texto plano
     if (user.password !== password) {
       return res.status(400).json({ message: "Contraseña incorrecta" });
     }
 
-    // Generar token
+    // Generar token --
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
@@ -73,13 +76,15 @@ export const login = async (req, res) => {
       token,
       user: {
         id: user.id,
-        nombre: user.nombre,
-        email: user.email,
-        username: user.username
+        nombre: user.nombre_apellido,
+        email: user.correo,
+        username: user.usuario
       }
     });
 
   } catch (error) {
+    console.error(error); // Útil para ver errores en Railway
     return res.status(500).json({ message: "Error interno" });
   }
 };
+
