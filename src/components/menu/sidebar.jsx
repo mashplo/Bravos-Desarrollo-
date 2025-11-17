@@ -18,14 +18,14 @@ export default function Sidebar() {
                 return producto ? { ...producto, cantidad: item.cantidad } : null
             })
         )
-    const productos_validos = productos.filter(p => p !== null)
-    set_carrito_items(productos_validos)
+        const productos_validos = productos.filter(p => p !== null)
+        set_carrito_items(productos_validos)
 
-    const total_precio = productos_validos.reduce((sum, item) => sum + (item.price * item.cantidad), 0)
-    set_total(total_precio)
+        const total_precio = productos_validos.reduce((sum, item) => sum + (item.price * item.cantidad), 0)
+        set_total(total_precio)
 
-    const count = productos_validos.reduce((s, i) => s + (i.cantidad || 0), 0)
-    set_total_count(count)
+        const count = productos_validos.reduce((s, i) => s + (i.cantidad || 0), 0)
+        set_total_count(count)
     }
     
     useEffect(() => {
