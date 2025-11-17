@@ -20,10 +20,17 @@ export default function Login() {
         })
 
         if (resultado.success) {
-            toast.success(resultado.message)
+            toast.success(resultado.message);
+
+        // Guardamos en localStorage
+        localStorage.setItem("usuario_actual", JSON.stringify(resultado.user));
+        localStorage.setItem("token", resultado.token);
+
+        // Redirigir según rol
+        const es_admin = resultado.user.role === "admin";
             setTimeout(() => {
                 // Redirigir según tipo de usuario
-                if (resultado.es_admin) {
+                if (es_admin) {
                     window.location.href = '/pendings'
                 } else {
                     window.location.href = '/'

@@ -72,13 +72,15 @@ export const login = async (req, res) => {
     );
 
     return res.json({
+      success: true,
       message: "Login exitoso",
       token,
       user: {
         id: user.id,
         nombre: user.nombre_apellido,
         email: user.correo,
-        username: user.usuario
+        username: user.usuario,
+        role: user.role
       }
     });
 

@@ -45,8 +45,11 @@ export async function iniciar_sesion({ email, password }) {
     const data = await handleResponse(res);
 
     if (data.success) {
-      // Guardamos el usuario (igual que antes)
-      localStorage.setItem("usuario_actual", JSON.stringify(data.usuario));
+      // Guardamos el usuario para la UI
+      localStorage.setItem("usuario_actual", JSON.stringify(data.user));
+
+      // Guardamos el token para autenticación
+      localStorage.setItem("token", data.token);
     }
 
     return data;
