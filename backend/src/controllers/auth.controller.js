@@ -1,7 +1,7 @@
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
-// --- REGISTRO ---
+//REGISTER
 export const register = async (req, res) => {
   try {
     const { nombre, email, password, username } = req.body;
@@ -11,23 +11,24 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "Faltan datos" });
     }
 
-    // Ver si ya existe email o username
-    const exists = await User.findOne({ where: { email } });
+    // Validar email
+    const exists = await User.findOne({ where: { correo: email } });
     if (exists) {
       return res.status(400).json({ message: "El correo ya existe" });
     }
 
-    const existsUser = await User.findOne({ where: { username } });
+    // Validar username
+    const existsUser = await User.findOne({ where: { usuario: username } });
     if (existsUser) {
       return res.status(400).json({ message: "El username ya existe" });
     }
 
-    // Crear usuario
+    // Crear usuario con los nombres correctos del modelo
     const user = await User.create({
-      nombre,
-      email,
-      username,
-      password // sin encryptar
+      nombre_apellido: nombre,
+      correo: email,
+      usuario: username,
+      password
     });
 
     return res.json({
@@ -36,9 +37,11 @@ export const register = async (req, res) => {
     });
 
   } catch (error) {
+    console.error(error); // agrégalo temporal para ver el error real
     return res.status(500).json({ message: "Error interno" });
   }
 };
+
 
 // --- LOGIN ---
 export const login = async (req, res) => {
