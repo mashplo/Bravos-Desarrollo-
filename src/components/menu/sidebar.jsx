@@ -1,5 +1,5 @@
 import { ShoppingCart } from "lucide-react"
-import { get_carrito } from "../../herramientas/usuario"
+import { get_carrito, change_item_cantidad } from "../../herramientas/usuario"
 import { getHamburguesa, getBebidas } from "../../herramientas/productos"
 import { useState, useEffect } from "react"
 import ModalPago from "./modal-pago"
@@ -8,6 +8,7 @@ import { toast } from "sonner"
 export default function Sidebar() {
     const [carrito_items, set_carrito_items] = useState([])
     const [total, set_total] = useState(0)
+    const [total_count, set_total_count] = useState(0)
     
     const fetchCarrito = async () => {
         const carrito = await get_carrito()
@@ -19,9 +20,12 @@ export default function Sidebar() {
         )
         const productos_validos = productos.filter(p => p !== null)
         set_carrito_items(productos_validos)
-        
+
         const total_precio = productos_validos.reduce((sum, item) => sum + (item.price * item.cantidad), 0)
         set_total(total_precio)
+
+        const count = productos_validos.reduce((s, i) => s + (i.cantidad || 0), 0)
+        set_total_count(count)
     }
     
     useEffect(() => {
@@ -48,9 +52,9 @@ export default function Sidebar() {
             <input id="my-drawer-1" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">
                 <button onClick={toggleDrawer} className="p-2 rounded-full hover:bg-gray-200 drawer-button">
-                    <div className="relative">
+                        <div className="relative">
                         <ShoppingCart size={25} />
-                        <div className="badge badge-error badge-xs absolute -top-2 -right-2 p-2 rounded-full">{carrito_items.length}</div>
+                        <div className="badge badge-error badge-xs absolute -top-2 -right-2 p-2 rounded-full">{total_count}</div>
                     </div>
                 </button>
             </div>
@@ -70,7 +74,11 @@ export default function Sidebar() {
                                             <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded object-cover" />
                                             <div className="flex-1">
                                                 <h3 className="font-semibold text-sm">{item.name}</h3>
-                                                <p className="text-xs text-gray-500">Cantidad: {item.cantidad}</p>
+                                                <div className="flex items-center gap-2 mt-2">
+                                                    <button onClick={async () => { await change_item_cantidad({ id: item.id, delta: -1 }); fetchCarrito(); }} className="btn btn-sm">-</button>
+                                                    <span className="text-sm text-gray-600">{item.cantidad}</span>
+                                                    <button onClick={async () => { await change_item_cantidad({ id: item.id, delta: 1 }); fetchCarrito(); }} className="btn btn-sm">+</button>
+                                                </div>
                                                 <p className="text-sm font-bold">S/{(item.price * item.cantidad).toFixed(2)}</p>
                                             </div>
                                         </div>
@@ -83,10 +91,13 @@ export default function Sidebar() {
                     {carrito_items.length > 0 && (
                         <div className="mt-4 space-y-3">
                             <div className="divider my-2"></div>
-                            <div className="flex justify-between items-center text-lg font-bold">
-                                <span>Total:</span>
-                                <span>{total.toFixed(2)}</span>
-                            </div>
+                                <div className="flex justify-between items-center text-lg font-bold">
+                                    <div>
+                                        <span>Total:</span>
+                                        <div className="text-sm text-gray-500">{total_count} artículo(s)</div>
+                                    </div>
+                                    <span>{total.toFixed(2)}</span>
+                                </div>
                             <ModalPago 
                                 carrito_items={carrito_items} 
                                 total={total} 

@@ -20,12 +20,18 @@ export default function ModalPago({ carrito_items, total, onCompraExitosa }) {
         }
         
         // Crear el pedido
-        await crear_pedido({
+        const resultado = await crear_pedido({
             items: carrito_items,
             total: total,
             metodo_pago: metodo_pago
         })
-        
+
+        if (!resultado || !resultado.success) {
+            toast.error(resultado?.message || 'No se pudo completar la compra')
+            return
+        }
+
+        toast.success('Compra realizada con éxito')
         onCompraExitosa()
         document.getElementById('modal-pago').close()
         set_metodo_pago('')

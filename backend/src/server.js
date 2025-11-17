@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-//import dotenv from 'dotenv';
 import { sequelize } from './config/database.js';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
@@ -8,8 +7,9 @@ import { fileURLToPath } from 'url';
 
 //paralogin y register
 import authRoutes from "./routes/auth.routes.js";
+import pedidosRoutes from "./routes/pedido.routes.js";
 
-//dotenv.config();
+// No cargamos dotenv aquí: las variables de entorno las gestiona Railway/entorno de despliegue
 
 // Para obtener __dirname en ES modules
 const __filename = fileURLToPath(import.meta.url);
@@ -22,6 +22,7 @@ app.use(cors());
 app.use(express.json());
 //apis de identificacion
 app.use("/api/auth", authRoutes);
+app.use("/api/pedidos", pedidosRoutes);
 
 
 // Sincronizar modelos (solo al inicio)
