@@ -1,0 +1,211 @@
+export async function add_item_carrito({id}) {
+    const carrito = localStorage.getItem("carrito") ? JSON.parse(localStorage.getItem("carrito")) : [];
+    const index = carrito.findIndex(i => i.id === id);
+    if (index === -1) {
+        carrito.push({ id: id, cantidad: 1 });
+    } else {
+        carrito[index].cantidad = (carrito[index].cantidad || 0) + 1;
+    }
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    return carrito;
+}
+
+export async function change_item_cantidad({id, delta}) {
+    // delta puede ser positivo o negativo
+    const carrito = localStorage.getItem("carrito") ? JSON.parse(localStorage.getItem("carrito")) : [];
+    const index = carrito.findIndex(i => i.id === id);
+    if (index === -1) return carrito;
+
+    carrito[index].cantidad = (carrito[index].cantidad || 0) + delta;
+    if (carrito[index].cantidad <= 0) {
+        // eliminar
+        carrito.splice(index, 1);
+    }
+
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    return carrito;
+}
+
+export async function set_item_cantidad({id, cantidad}) {
+    const carrito = localStorage.getItem("carrito") ? JSON.parse(localStorage.getItem("carrito")) : [];
+    const index = carrito.findIndex(i => i.id === id);
+    if (index === -1) {
+        if (cantidad > 0) carrito.push({ id, cantidad });
+    } else {
+        if (cantidad <= 0) carrito.splice(index, 1);
+        else carrito[index].cantidad = cantidad;
+    }
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    return carrito;
+}
+
+export async function remove_item_carrito({id}) {
+    const carrito = localStorage.getItem("carrito") ? JSON.parse(localStorage.getItem("carrito")) : [];
+    const nuevo = carrito.filter(i => i.id !== id);
+    localStorage.setItem("carrito", JSON.stringify(nuevo));
+    return nuevo;
+}
+
+export async function get_carrito() {
+    const carrito = localStorage.getItem("carrito") ? JSON.parse(localStorage.getItem("carrito")) : []
+    return carrito;
+}
+
+export async function crear_pedido({items, total, metodo_pago}) {
+    // Requiere token JWT: primero comprobar si el usuario está autenticado
+    const token = localStorage.getItem("token");
+    if (!token) {
+        return { success: false, message: "Debes iniciar sesión para realizar el pago" };
+    }
+
+    try {
+        const backend = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
+        const resp = await fetch(`${backend}/api/pedidos`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ items, total, metodo_pago })
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+            return { success: false, message: data.message || 'No se pudo crear el pedido', details: data };
+        }
+
+        // Si se creó el pedido en el backend, limpiar carrito local y guardar el pedido localmente también
+        localStorage.removeItem("carrito");
+        const pedidos = localStorage.getItem("pedidos") ? JSON.parse(localStorage.getItem("pedidos")) : [];
+        pedidos.push(data.pedido);
+        localStorage.setItem("pedidos", JSON.stringify(pedidos));
+
+        return { success: true, message: data.message || 'Pedido creado', pedido: data.pedido };
+    } catch (error) {
+        console.error("Error al crear pedido:", error);
+        return { success: false, message: "Error de red al crear el pedido" };
+    }
+}
+
+export async function get_pedidos() {
+    const pedidos = localStorage.getItem("pedidos") ? JSON.parse(localStorage.getItem("pedidos")) : []
+    return pedidos
+}
+
+export async function actualizar_estado_pedido({id, nuevo_estado}) {
+    const pedidos = localStorage.getItem("pedidos") ? JSON.parse(localStorage.getItem("pedidos")) : []
+    const pedido_index = pedidos.findIndex(p => p.id === id)
+    if (pedido_index !== -1) {
+        pedidos[pedido_index].estado = nuevo_estado
+        localStorage.setItem("pedidos", JSON.stringify(pedidos))
+    }
+    return pedidos
+}
+
+// Funciones de autenticación
+export async function registrar_usuario({nombre, email, password, direccion}) {
+    const usuarios = localStorage.getItem("usuarios") ? JSON.parse(localStorage.getItem("usuarios")) : []
+    
+    // Verificar si el email ya existe
+    const usuario_existente = usuarios.find(u => u.email === email)
+    if (usuario_existente) {
+        return { success: false, message: "El email ya está registrado" }
+    }
+    
+    const nuevo_usuario = {
+        id: Date.now(),
+        nombre: nombre,
+        email: email,
+        password: password, // En producción esto debería estar hasheado
+        direccion: direccion,
+        fecha_registro: new Date().toISOString()
+    }
+    
+    usuarios.push(nuevo_usuario)
+    localStorage.setItem("usuarios", JSON.stringify(usuarios))
+    
+    return { success: true, message: "Usuario registrado exitosamente", usuario: nuevo_usuario }
+}
+
+export async function iniciar_sesion({email, password}) {
+    const usuarios = localStorage.getItem("usuarios") ? JSON.parse(localStorage.getItem("usuarios")) : []
+    
+    console.log("Usuarios en localStorage:", usuarios)
+    console.log("Intentando login con:", { email, password })
+    
+    // Verificar si es el administrador
+    const es_admin = email === "esaul@gmail.com" && password === "contra123"
+    
+    let usuario = null
+    
+    if (es_admin) {
+        // Crear usuario admin si no existe en la lista
+        usuario = {
+            id: 0,
+            nombre: "Administrador",
+            email: "esaul@gmail.com",
+            password: "contra123",
+            es_admin: true
+        }
+    } else {
+        // Buscar en usuarios registrados
+        usuario = usuarios.find(u => u.email === email && u.password === password)
+    }
+    
+    console.log("Usuario encontrado:", usuario)
+    
+    if (!usuario) {
+        return { success: false, message: "Email o contraseña incorrectos" }
+    }
+    
+    // Guardar sesión actual
+    localStorage.setItem("usuario_actual", JSON.stringify(usuario))
+    
+    return { 
+        success: true, 
+        message: "Sesión iniciada exitosamente", 
+        usuario: usuario,
+        es_admin: es_admin 
+    }
+}
+
+export async function cerrar_sesion() {
+    localStorage.removeItem("usuario_actual")
+    return { success: true, message: "Sesión cerrada" }
+}
+
+export async function obtener_usuario_actual() {
+    const usuario = localStorage.getItem("usuario_actual")
+    return usuario ? JSON.parse(usuario) : null
+}
+
+// Funciones de reseñas
+export async function crear_resena({comentario, calificacion}) {
+    const usuario_actual = await obtener_usuario_actual()
+    
+    if (!usuario_actual) {
+        return { success: false, message: "Debes iniciar sesión para dejar una reseña" }
+    }
+    
+    const resenas = localStorage.getItem("resenas") ? JSON.parse(localStorage.getItem("resenas")) : []
+    
+    const nueva_resena = {
+        id: Date.now(),
+        usuario_id: usuario_actual.id,
+        nombre: usuario_actual.nombre,
+        comentario: comentario,
+        calificacion: calificacion,
+        fecha: new Date().toISOString()
+    }
+    
+    resenas.push(nueva_resena)
+    localStorage.setItem("resenas", JSON.stringify(resenas))
+    
+    return { success: true, message: "Reseña publicada exitosamente", resena: nueva_resena }
+}
+
+export async function get_resenas() {
+    const resenas = localStorage.getItem("resenas") ? JSON.parse(localStorage.getItem("resenas")) : []
+    return resenas
+}
