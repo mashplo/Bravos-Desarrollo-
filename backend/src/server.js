@@ -6,6 +6,8 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+import authRoutes from "./routes/auth.js";
+
 dotenv.config();
 
 // Para obtener __dirname en ES modules
@@ -26,6 +28,10 @@ app.get('/api/health', (req, res) => {
 app.get("/", (req, res) => {
   res.send("✅ Servidor desplegado correctamente en Railway!");
 });
+
+//apis de identificacion
+app.use("/api/auth", authRoutes);
+
 
 // imagen de grafo
 app.get('/api/grafo', (req, res) => {
