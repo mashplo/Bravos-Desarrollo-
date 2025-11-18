@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 //paralogin y register
 import authRoutes from "./routes/auth.routes.js";
 import pedidosRoutes from "./routes/pedido.routes.js";
+import resenaRoutes from "./routes/resena.routes.js";
 
 // No cargamos dotenv aquí: las variables de entorno las gestiona Railway/entorno de despliegue
 
@@ -23,6 +24,7 @@ app.use(express.json());
 //apis de identificacion
 app.use("/api/auth", authRoutes);
 app.use("/api/pedidos", pedidosRoutes);
+app.use("/api/resenas", resenaRoutes);
 
 
 // Sincronizar modelos (solo al inicio)

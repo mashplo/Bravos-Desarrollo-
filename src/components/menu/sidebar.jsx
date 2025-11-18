@@ -15,7 +15,8 @@ export default function Sidebar() {
         const productos = await Promise.all(
             carrito.map(async (item) => {
                 const producto = await getHamburguesa({id: item.id})
-                return producto ? { ...producto, cantidad: item.cantidad } : null
+                // Asegurarse de mantener el id original para que +/- funcione
+                return producto ? { id: item.id, ...producto, cantidad: item.cantidad } : null
             })
         )
         const productos_validos = productos.filter(p => p !== null)

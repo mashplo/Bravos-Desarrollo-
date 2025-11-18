@@ -2,6 +2,7 @@ import { User } from "./user.model.js";
 import { Producto } from "./producto.model.js";
 import { Pedido } from "./pedido.model.js";
 import { DetallePedido } from "./detalles_pedido.model.js";
+import { Resena } from "./resena.model.js";
 
 // Un usuario realiza muchos pedidos
 User.hasMany(Pedido, {
@@ -28,3 +29,4 @@ DetallePedido.belongsTo(Producto, {
 });
 
 export { User, Producto, Pedido, DetallePedido };
+export { Resena };

@@ -1,10 +1,50 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
 import { CreditCard, Smartphone, Wallet, DollarSign } from "lucide-react"
 import { toast } from "sonner"
 import { crear_pedido } from "../../herramientas/usuario"
 
 export default function ModalPago({ carrito_items, total, onCompraExitosa }) {
+    const navigate = useNavigate()
+    const location = useLocation()
     const [metodo_pago, set_metodo_pago] = useState('')
+    const [handledAutoOpen, setHandledAutoOpen] = useState(false)
+
+    useEffect(() => {
+        // Si la URL contiene openModal=1, abrir el modal automáticamente.
+        const params = new URLSearchParams(location.search)
+        const openModal = params.get('openModal') === '1'
+        const autoPay = params.get('autoPay') === '1'
+
+        if (openModal && !handledAutoOpen) {
+            try { document.getElementById('modal-pago').showModal() } catch (e) {}
+            setHandledAutoOpen(true)
+
+            // Recuperar método de pago que pudo haberse guardado antes de redirigir
+            const pending = localStorage.getItem('pending_metodo_pago')
+            if (pending && !metodo_pago) {
+                set_metodo_pago(pending)
+                // limpiar
+                localStorage.removeItem('pending_metodo_pago')
+                // si viene autoPay, intentar pagar
+                if (autoPay) {
+                    setTimeout(() => {
+                        handlePagar()
+                    }, 200)
+                }
+                return
+            }
+
+            // Solo intentar pago automático si ya se seleccionó un método
+            if (autoPay && metodo_pago) {
+                // Delay slightly to allow modal render
+                setTimeout(() => {
+                    handlePagar()
+                }, 200)
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.search, handledAutoOpen, metodo_pago])
 
     const metodos_pago = [
         { id: 'tarjeta', nombre: 'Tarjeta', icono: CreditCard },
@@ -14,6 +54,25 @@ export default function ModalPago({ carrito_items, total, onCompraExitosa }) {
     ]
 
     const handlePagar = async () => {
+        // Si no está logueado, redireccionar al login con parámetro next para volver
+        const token = localStorage.getItem('token')
+        if (!token) {
+            toast.error('Debes iniciar sesión para continuar')
+            // cerrar modal
+            try { document.getElementById('modal-pago').close() } catch (e) {}
+
+            // Guardar método de pago seleccionado (si hay) para recuperarlo después
+            try { localStorage.setItem('pending_metodo_pago', metodo_pago || '') } catch (e) {}
+
+            // Construir next: la ruta actual + abrir modal y pedir autoPay
+            const currentPath = location.pathname + location.search
+            const sep = currentPath.includes('?') ? '&' : '?'
+            const target = `${currentPath}${sep}openModal=1&autoPay=1`
+            const encoded = encodeURIComponent(target)
+            navigate(`/login?next=${encoded}`)
+            return
+        }
+
         if (!metodo_pago) {
             toast.error("Por favor selecciona un método de pago")
             return

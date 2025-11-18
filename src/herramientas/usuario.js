@@ -1,6 +1,6 @@
 export async function add_item_carrito({id}) {
     const carrito = localStorage.getItem("carrito") ? JSON.parse(localStorage.getItem("carrito")) : [];
-    const index = carrito.findIndex(i => i.id === id);
+    const index = carrito.findIndex(i => String(i.id) === String(id));
     if (index === -1) {
         carrito.push({ id: id, cantidad: 1 });
     } else {
@@ -13,7 +13,7 @@ export async function add_item_carrito({id}) {
 export async function change_item_cantidad({id, delta}) {
     // delta puede ser positivo o negativo
     const carrito = localStorage.getItem("carrito") ? JSON.parse(localStorage.getItem("carrito")) : [];
-    const index = carrito.findIndex(i => i.id === id);
+    const index = carrito.findIndex(i => String(i.id) === String(id));
     if (index === -1) return carrito;
 
     carrito[index].cantidad = (carrito[index].cantidad || 0) + delta;
@@ -28,7 +28,7 @@ export async function change_item_cantidad({id, delta}) {
 
 export async function set_item_cantidad({id, cantidad}) {
     const carrito = localStorage.getItem("carrito") ? JSON.parse(localStorage.getItem("carrito")) : [];
-    const index = carrito.findIndex(i => i.id === id);
+    const index = carrito.findIndex(i => String(i.id) === String(id));
     if (index === -1) {
         if (cantidad > 0) carrito.push({ id, cantidad });
     } else {
@@ -41,7 +41,7 @@ export async function set_item_cantidad({id, cantidad}) {
 
 export async function remove_item_carrito({id}) {
     const carrito = localStorage.getItem("carrito") ? JSON.parse(localStorage.getItem("carrito")) : [];
-    const nuevo = carrito.filter(i => i.id !== id);
+    const nuevo = carrito.filter(i => String(i.id) !== String(id));
     localStorage.setItem("carrito", JSON.stringify(nuevo));
     return nuevo;
 }
@@ -182,30 +182,43 @@ export async function obtener_usuario_actual() {
 
 // Funciones de reseñas
 export async function crear_resena({comentario, calificacion}) {
-    const usuario_actual = await obtener_usuario_actual()
-    
-    if (!usuario_actual) {
+    const token = localStorage.getItem('token')
+    if (!token) {
         return { success: false, message: "Debes iniciar sesión para dejar una reseña" }
     }
-    
-    const resenas = localStorage.getItem("resenas") ? JSON.parse(localStorage.getItem("resenas")) : []
-    
-    const nueva_resena = {
-        id: Date.now(),
-        usuario_id: usuario_actual.id,
-        nombre: usuario_actual.nombre,
-        comentario: comentario,
-        calificacion: calificacion,
-        fecha: new Date().toISOString()
+
+    try {
+        const backend = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
+        const resp = await fetch(`${backend}/api/resenas`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ comentario, calificacion })
+        })
+
+        const data = await resp.json().catch(() => ({}))
+        if (!resp.ok) {
+            return { success: false, message: data.message || 'No se pudo publicar la reseña', details: data }
+        }
+
+        return { success: true, message: data.message || 'Reseña publicada exitosamente', resena: data.resena }
+    } catch (error) {
+        console.error('Error creando reseña:', error)
+        return { success: false, message: 'Error de red al crear la reseña' }
     }
-    
-    resenas.push(nueva_resena)
-    localStorage.setItem("resenas", JSON.stringify(resenas))
-    
-    return { success: true, message: "Reseña publicada exitosamente", resena: nueva_resena }
 }
 
 export async function get_resenas() {
-    const resenas = localStorage.getItem("resenas") ? JSON.parse(localStorage.getItem("resenas")) : []
-    return resenas
+    try {
+        const backend = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
+        const resp = await fetch(`${backend}/api/resenas`)
+        if (!resp.ok) return []
+        const data = await resp.json().catch(() => [])
+        return data
+    } catch (error) {
+        console.error('Error obteniendo reseñas:', error)
+        return []
+    }
 }

@@ -1,6 +1,7 @@
 import { User, LogOut } from "lucide-react"
 
 import Sidebar from "./menu/sidebar"
+import RdfButton from "./rdfButton"
 import { useState, useEffect } from "react"
 import { obtener_usuario_actual, cerrar_sesion } from "../herramientas/usuario"
 import { toast } from "sonner"
@@ -39,6 +40,7 @@ export default function Navbar() {
                 </ul>
             </div>
             <div className="flex flex-row items-center gap-3">
+                <RdfButton />
                 {usuario_actual ? (
                     <>
                         <span className="text-sm font-medium">Hola, {usuario_actual.nombre}</span>
