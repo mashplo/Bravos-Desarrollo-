@@ -172,6 +172,7 @@ export async function iniciar_sesion({email, password}) {
 
 export async function cerrar_sesion() {
     localStorage.removeItem("usuario_actual")
+    localStorage.removeItem("token")
     return { success: true, message: "Sesión cerrada" }
 }
 
