@@ -1,130 +1,81 @@
-import { useState } from 'react';
+import { useState } from "react"
+import { FileText, Download, ExternalLink, Copy } from "lucide-react"
 
-function DescargaRDF() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+export default function RdfButton() {
+    const [open, setOpen] = useState(false)
+    const [content, setContent] = useState('')
+    const [format, setFormat] = useState('turtle')
+    const backend = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
 
-  const descargarRDF = async (formato) => {
-    setLoading(true);
-    setError(null);
-    
-try {
-  const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  const url = formato === 'xml'
-    ? `${baseURL}/api/rdf/xml`
-    : `${baseURL}/api/rdf/turtle`;
-
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error('Error al obtener el archivo RDF');
-      }
-      
-      const rdfData = await response.text();
-      
-      // Crear y descargar archivo
-      const extension = formato === 'xml' ? 'rdf' : 'ttl';
-      const mimeType = formato === 'xml' 
-        ? 'application/rdf+xml' 
-        : 'text/turtle';
-      
-      const blob = new Blob([rdfData], { type: mimeType });
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = `bravosRDF.${extension}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(downloadUrl);
-      
-      console.log('✅ Archivo descargado exitosamente');
-      
-    } catch (err) {
-      console.error('Error:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    const fetchRdf = async (fmt) => {
+        setFormat(fmt)
+        try {
+            const res = await fetch(`${backend}/api/rdf?format=${fmt}`)
+            const txt = await res.text()
+            setContent(txt)
+        } catch (e) {
+            setContent('Error cargando RDF')
+        }
     }
-  };
 
-const abrirRDF = (formato) => {
-  const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  const url = formato === 'xml'
-    ? `${baseURL}/api/rdf/xml/view`
-    : `${baseURL}/api/rdf/turtle`;
+    const handleOpen = async () => {
+        await fetchRdf('turtle')
+        setOpen(true)
+    }
 
-  window.open(url, '_blank');
-};
+    const handleDownload = (fmt) => {
+        const url = `${backend}/api/rdf?format=${fmt}`
+        const a = document.createElement('a')
+        a.href = url
+        a.download = fmt === 'xml' ? 'bravosRDF.rdf' : 'bravosRDF.ttl'
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+    }
 
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(content)
+            alert('RDF copiado al portapapeles')
+        } catch (e) {
+            alert('No se pudo copiar')
+        }
+    }
 
-  return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Datos RDF - Bravos</h2>
-      
-      <div className="space-y-4">
-        {/* Botones de descarga */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Descargar archivos:</h3>
-          <div className="flex gap-4">
-            <button
-              onClick={() => descargarRDF('turtle')}
-              disabled={loading}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded disabled:opacity-50"
-            >
-              {loading ? 'Descargando...' : '⬇️ Turtle (.ttl)'}
+    return (
+        <>
+            <button onClick={handleOpen} title="RDF" className="p-2 rounded-full hover:bg-gray-200">
+                <FileText size={22} />
             </button>
-            
-            <button
-              onClick={() => descargarRDF('xml')}
-              disabled={loading}
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded disabled:opacity-50"
-            >
-              {loading ? 'Descargando...' : '⬇️ RDF/XML (.rdf)'}
-            </button>
-          </div>
-        </div>
 
-        {/* Botones para ver en navegador */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Ver en el navegador:</h3>
-          <div className="flex gap-4">
-            <button
-              onClick={() => abrirRDF('turtle')}
-              className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded"
-            >
-              👁️ Ver Turtle
-            </button>
-            
-            <button
-              onClick={() => abrirRDF('xml')}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded"
-            >
-              👁️ Ver RDF/XML
-            </button>
-          </div>
-        </div>
-      </div>
-      
-<button
-  onClick={() => {
-    const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    window.open(`${baseURL}/api/grafo`, '_blank');
-  }}
-  className="bg-purple-100 hover:bg-purple-200 text-purple-800 px-6 py-2 rounded border border-purple-300"
->
-  Ver Grafo
-</button>
+            <dialog id="rdf-modal" className={`modal ${open ? 'modal-open' : ''}`} onClose={() => setOpen(false)}>
+                <div className="modal-box max-w-3xl">
+                    <h3 className="font-bold text-lg flex items-center gap-2"><FileText /> RDF del sitio</h3>
+                    <div className="flex gap-2 mt-3"> 
+                        <button className={`btn btn-sm ${format==='turtle' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => fetchRdf('turtle')}>Turtle (.ttl)</button>
+                        <button className={`btn btn-sm ${format==='xml' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => fetchRdf('xml')}>RDF/XML (.rdf)</button>
+                        <div className="flex-1"></div>
+                        <button className="btn btn-sm" onClick={() => handleDownload(format)}><Download size={14} className="mr-2"/>Descargar</button>
+                        <a className="btn btn-sm btn-ghost" href={`${backend}/api/rdf?format=${format}`} target="_blank" rel="noreferrer"><ExternalLink size={14} className="mr-2"/>Abrir</a>
+                        <button className="btn btn-sm btn-ghost" onClick={handleCopy}><Copy size={14} className="mr-2"/>Copiar</button>
+                        <button className="btn btn-sm btn-ghost" onClick={() => window.open(`${backend}/api/grafo`, '_blank')}><ExternalLink size={14} className="mr-2"/>Ver Grafo</button>
+                    </div>
 
+                    <div className="mt-4 flex gap-4">
+                        <div className="w-1/3 hidden md:block">
+                            <div className="text-sm font-semibold mb-2">Grafo (preview)</div>
+                            <img src={`${backend}/api/grafo`} alt="Grafo" className="w-full h-48 object-contain rounded shadow" />
+                        </div>
+                        <div className="flex-1">
+                            <pre className="whitespace-pre-wrap max-h-96 overflow-auto bg-base-200 p-3 rounded text-sm">{content}</pre>
+                        </div>
+                    </div>
 
-      {error && (
-        <div className="mt-4 p-4 bg-red-100 text-red-700 rounded">
-          Error: {error}
-        </div>
-      )}
-    </div>
-  );
+                    <div className="modal-action">
+                        <button className="btn" onClick={() => setOpen(false)}>Cerrar</button>
+                    </div>
+                </div>
+            </dialog>
+        </>
+    )
 }
-
-export default DescargaRDF;

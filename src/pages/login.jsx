@@ -1,10 +1,15 @@
 import { useState } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
 import { iniciar_sesion } from "../herramientas/usuario_login"
 import { toast, Toaster } from "sonner"
 
 export default function Login() {
     const [email, set_email] = useState('')
     const [password, set_password] = useState('')
+    const navigate = useNavigate()
+    const location = useLocation()
+    const params = new URLSearchParams(location.search)
+    const next = params.get('next')
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -22,20 +27,27 @@ export default function Login() {
         if (resultado.success) {
             toast.success(resultado.message);
 
-        // Guardamos en localStorage
-        localStorage.setItem("usuario_actual", JSON.stringify(resultado.user));
-        localStorage.setItem("token", resultado.token);
+            // Guardamos en localStorage
+            localStorage.setItem("usuario_actual", JSON.stringify(resultado.user));
+            localStorage.setItem("token", resultado.token);
 
-        // Redirigir según rol
-        const es_admin = resultado.user.role === "admin";
+            // Redirigir según 'next' si viene en query, sino según rol
+            const es_admin = resultado.user.role === "admin";
             setTimeout(() => {
-                // Redirigir según tipo de usuario
-                if (es_admin) {
-                    window.location.href = '/pendings'
-                } else {
-                    window.location.href = '/'
+                if (next) {
+                    try {
+                        navigate(decodeURIComponent(next))
+                    } catch (e) {
+                        navigate(next)
+                    }
+                    return
                 }
-            }, 1500)
+                if (es_admin) {
+                    navigate('/pendings')
+                } else {
+                    navigate('/')
+                }
+            }, 800)
         } else {
             toast.error(resultado.message)
         }
@@ -45,6 +57,7 @@ export default function Login() {
         <main className="flex min-h-screen flex-col items-center justify-center relative">
             <Toaster position="top-right" richColors />
             <a href="/registrarse" className="absolute top-8 right-8 text-sm btn">¿No tienes una cuenta? Regístrate</a>
+            <a href="/menu" className="absolute top-8 left-8 text-sm btn btn-ghost">← Volver al menú</a>
             <img src="/logo.png" alt="" className="w-40" />
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80 py-10">
                 <div className="flex flex-col">
