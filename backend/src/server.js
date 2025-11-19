@@ -1,9 +1,9 @@
-import express from 'express';
-import cors from 'cors';
-import { sequelize } from './config/database.js';
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import express from "express";
+import cors from "cors";
+import { sequelize } from "./config/database.js";
+import { readFileSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 
 //paralogin y register
 import authRoutes from "./routes/auth.routes.js";
@@ -26,114 +26,109 @@ app.use("/api/auth", authRoutes);
 app.use("/api/pedidos", pedidosRoutes);
 app.use("/api/resenas", resenaRoutes);
 
-
 // Sincronizar modelos (solo al inicio)
 sequelize.sync().then(() => {
   console.log("DB lista");
 });
 
 // Ruta de prueba
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Backend funcionando' });
+app.get("/api/health", (req, res) => {
+  res.json({ status: "OK", message: "Backend funcionando" });
 });
 
 app.get("/", (req, res) => {
   res.send("✅ Servidor desplegado correctamente en Railway!");
 });
 
-
-
-
 // imagen de grafo
-app.get('/api/grafo', (req, res) => {
-
-  const imagePath = join(__dirname, '../data/grafo.png');
-  console.log('📂 Buscando imagen en:', imagePath);
+app.get("/api/grafo", (req, res) => {
+  const imagePath = join(__dirname, "../data/grafo.png");
+  console.log("📂 Buscando imagen en:", imagePath);
   res.sendFile(imagePath, (err) => {
     if (err) {
-      console.error('Error enviando imagen:', err);
-      res.status(err.status || 500).json({ error: 'No se pudo cargar la imagen' });
+      console.error("Error enviando imagen:", err);
+      res
+        .status(err.status || 500)
+        .json({ error: "No se pudo cargar la imagen" });
     }
   });
 });
 
-
 // Endpoint para RDF en formato Turtle
-app.get('/api/rdf/turtle', (req, res) => {
+app.get("/api/rdf/turtle", (req, res) => {
   try {
-    const rdfPath = join(__dirname, '../data/bravosRDF.ttl');
-    const rdfContent = readFileSync(rdfPath, 'utf8');
-    
-    res.set('Content-Type', 'text/turtle; charset=utf-8');
+    const rdfPath = join(__dirname, "../data/bravosRDF.ttl");
+    const rdfContent = readFileSync(rdfPath, "utf8");
+
+    res.set("Content-Type", "text/turtle; charset=utf-8");
     res.send(rdfContent);
   } catch (error) {
-    console.error('Error leyendo archivo Turtle:', error);
-    res.status(500).json({ 
-      error: 'Error al leer archivo RDF',
-      details: error.message 
+    console.error("Error leyendo archivo Turtle:", error);
+    res.status(500).json({
+      error: "Error al leer archivo RDF",
+      details: error.message,
     });
   }
 });
 
 // Endpoint para RDF en formato XML (descarga)
-app.get('/api/rdf/xml', (req, res) => {
+app.get("/api/rdf/xml", (req, res) => {
   try {
-    const rdfPath = join(__dirname, '../data/bravosRDF.rdf');
-    const rdfContent = readFileSync(rdfPath, 'utf8');
-    
-    res.set('Content-Type', 'application/rdf+xml; charset=utf-8');
+    const rdfPath = join(__dirname, "../data/bravosRDF.rdf");
+    const rdfContent = readFileSync(rdfPath, "utf8");
+
+    res.set("Content-Type", "application/rdf+xml; charset=utf-8");
     res.send(rdfContent);
   } catch (error) {
-    console.error('Error leyendo archivo RDF/XML:', error);
-    res.status(500).json({ 
-      error: 'Error al leer archivo RDF/XML',
-      details: error.message 
+    console.error("Error leyendo archivo RDF/XML:", error);
+    res.status(500).json({
+      error: "Error al leer archivo RDF/XML",
+      details: error.message,
     });
   }
 });
 
 // Endpoint para ver RDF/XML en el navegador (como texto)
-app.get('/api/rdf/xml/view', (req, res) => {
+app.get("/api/rdf/xml/view", (req, res) => {
   try {
-    const rdfPath = join(__dirname, '../data/bravosRDF.rdf');
-    const rdfContent = readFileSync(rdfPath, 'utf8');
-    
+    const rdfPath = join(__dirname, "../data/bravosRDF.rdf");
+    const rdfContent = readFileSync(rdfPath, "utf8");
+
     // Forzar que se muestre como texto plano
-    res.set('Content-Type', 'text/plain; charset=utf-8');
+    res.set("Content-Type", "text/plain; charset=utf-8");
     res.send(rdfContent);
   } catch (error) {
-    console.error('Error leyendo archivo RDF/XML:', error);
-    res.status(500).json({ 
-      error: 'Error al leer archivo RDF/XML',
-      details: error.message 
+    console.error("Error leyendo archivo RDF/XML:", error);
+    res.status(500).json({
+      error: "Error al leer archivo RDF/XML",
+      details: error.message,
     });
   }
 });
 
 // Endpoint general que acepta formato como parámetro
-app.get('/api/rdf', (req, res) => {
-  const format = req.query.format || 'turtle'; // Por defecto Turtle
-  
+app.get("/api/rdf", (req, res) => {
+  const format = req.query.format || "turtle"; // Por defecto Turtle
+
   try {
     let rdfPath, contentType, fileContent;
-    
-    if (format === 'xml') {
-      rdfPath = join(__dirname, '../data/bravosRDF.rdf');
-      contentType = 'application/rdf+xml; charset=utf-8';
+
+    if (format === "xml") {
+      rdfPath = join(__dirname, "../data/bravosRDF.rdf");
+      contentType = "application/rdf+xml; charset=utf-8";
     } else {
-      rdfPath = join(__dirname, '../data/bravosRDF.ttl');
-      contentType = 'text/turtle; charset=utf-8';
+      rdfPath = join(__dirname, "../data/bravosRDF.ttl");
+      contentType = "text/turtle; charset=utf-8";
     }
-    
-    fileContent = readFileSync(rdfPath, 'utf8');
-    res.set('Content-Type', contentType);
+
+    fileContent = readFileSync(rdfPath, "utf8");
+    res.set("Content-Type", contentType);
     res.send(fileContent);
-    
   } catch (error) {
-    console.error('Error leyendo archivo RDF:', error);
-    res.status(500).json({ 
-      error: 'Error al leer archivo RDF',
-      details: error.message 
+    console.error("Error leyendo archivo RDF:", error);
+    res.status(500).json({
+      error: "Error al leer archivo RDF",
+      details: error.message,
     });
   }
 });
@@ -144,11 +139,11 @@ const PORT = process.env.PORT || 3000;
 app.set("trust proxy", true);
 app.listen(PORT, async () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  
+
   try {
     await sequelize.authenticate();
-    console.log('✅ Conexión a MySQL exitosa');
+    console.log("✅ Conexión a MySQL exitosa");
   } catch (error) {
-    console.error('❌ Error conectando a MySQL:', error.message);
+    console.error("❌ Error conectando a MySQL:", error.message);
   }
 });
