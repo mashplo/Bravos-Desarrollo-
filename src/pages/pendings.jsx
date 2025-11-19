@@ -23,9 +23,13 @@ export default function Pendings() {
   }
 
   const marcar_como_listo = async (id) => {
-    const resp = await actualizar_estado_pedido({ id: id, nuevo_estado: "entregado" });
-    // Esperar un momento para que el backend actualice
-    setTimeout(cargar_pedidos, 500);
+    try {
+      const resp = await actualizar_estado_pedido({ id: id, nuevo_estado: "entregado" });
+      // Esperar un momento para que el backend actualice
+      setTimeout(cargar_pedidos, 500);
+    } catch (error) {
+      alert("No se pudo actualizar el estado del pedido. Intenta de nuevo.");
+    }
   }
 
 
@@ -52,11 +56,12 @@ export default function Pendings() {
                     </div>
                     {pedido.items.map((item, idx) => (
                       <div key={idx} className="flex flex-row gap-5">
-                        <img src={item.image_url} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
+                        <img src={item.image_url || '/default-burger.png'} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
                         <div className="flex flex-col justify-between flex-1">
                           <div>
                             <h2 className="text-lg font-semibold">{item.name}</h2>
                             <p className="text-sm text-gray-600">Cantidad: {item.cantidad}</p>
+                            <p className="text-xs text-gray-400">ID producto: {item.id}</p>
                           </div>
                           <span className="text-md font-bold">S/{(item.price * item.cantidad).toFixed(2)}</span>
                         </div>
