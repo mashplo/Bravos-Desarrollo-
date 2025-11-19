@@ -76,3 +76,19 @@ export async function getHamburguesa({id}) {
     const hamburguesas = await getHamburguesas();
     return hamburguesas[id] || null;
 }
+
+export async function getProducto({ id }) {
+    const hamburguesas = await getHamburguesas();
+    const bebidas = await getBebidas();
+    const numericId = Number(id);
+    // IDs 0..(hamburguesas.length-1) => hamburguesas
+    if (numericId >= 0 && numericId < hamburguesas.length) {
+        return { id: numericId, ...hamburguesas[numericId] };
+    }
+    // IDs starting at hamburguesas.length => bebidas
+    const bebidaIndex = numericId - hamburguesas.length;
+    if (bebidaIndex >= 0 && bebidaIndex < bebidas.length) {
+        return { id: numericId, ...bebidas[bebidaIndex] };
+    }
+    return null;
+}

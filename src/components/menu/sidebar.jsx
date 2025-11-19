@@ -1,6 +1,6 @@
 import { ShoppingCart } from "lucide-react";
 import { get_carrito, change_item_cantidad } from "../../herramientas/usuario";
-import { getHamburguesa, getBebidas } from "../../herramientas/productos";
+import { getProducto } from "../../herramientas/productos";
 import { useState, useEffect } from "react";
 import ModalPago from "./modal-pago";
 import { toast } from "sonner";
@@ -14,7 +14,7 @@ export default function Sidebar() {
     const carrito = await get_carrito();
     const productos = await Promise.all(
       carrito.map(async (item) => {
-        const producto = await getHamburguesa({ id: item.id });
+        const producto = await getProducto({ id: item.id });
         // Asegurarse de mantener el id original para que +/- funcione
         return producto
           ? { id: item.id, ...producto, cantidad: item.cantidad }
