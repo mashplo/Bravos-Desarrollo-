@@ -1,4 +1,22 @@
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+
 export default function Hero() {
+    const navigate = useNavigate();
+
+    const handleOrderNow = useCallback((e) => {
+        e.preventDefault();
+        // Si el usuario está logueado (token o usuario_actual), ir a /menu
+        const token = localStorage.getItem("token");
+        const usuario = localStorage.getItem("usuario_actual");
+        if (token || usuario) {
+            navigate('/menu');
+            return;
+        }
+        // Si no está autenticado, ir a login
+        navigate('/login');
+    }, [navigate]);
+
     return (
         <section 
             className="relative min-h-screen flex items-center justify-center px-4"
@@ -22,12 +40,12 @@ export default function Hero() {
                     <a href="/menu" className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-6 rounded-lg text-lg transition-colors">
                         Ver Menú
                     </a>
-                    <a 
-                        href="/login"
+                    <button
+                        onClick={handleOrderNow}
                         className="bg-transparent border-2 border-white hover:bg-white hover:text-black font-bold py-3 px-6 rounded-lg text-lg transition-colors inline-block"
                     >
                         Ordenar Ahora
-                    </a>
+                    </button>
                 </div>
             </div>
         </section>
