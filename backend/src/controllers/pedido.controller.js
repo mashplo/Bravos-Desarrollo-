@@ -16,20 +16,34 @@ export const crearPedido = async (req, res) => {
       estado: "en_preparacion",
       monto_total: total || 0,
       metodo_pago: metodo_pago || "no especificado",
-      id_cliente: req.user?.id || null
+      id_cliente: req.user?.id || null,
     });
 
     // Guardar detalles de pedido (items)
-    for (const item of items) {
-      await DetallePedido.create({
-        cantidad: item.cantidad,
-        precio: item.precio,
-        id_pedido: nuevoPedido.id,
-        id_producto: item.id
-      });
-    }
+    // Aceptamos tanto `item.precio` como `item.price` desde el frontend.
+    const detalles = items.map((item) => ({
+      cantidad: item.cantidad || item.qty || 1,
+      precio: item.precio ?? item.price ?? 0,
+      id_pedido: nuevoPedido.id,
+      id_producto: item.id,
+    }));
 
-    return res.status(201).json({ success: true, message: "Pedido creado", pedido: nuevoPedido });
+    // Usar bulkCreate para eficiencia y evitar errores por campos undefined
+    await DetallePedido.bulkCreate(detalles);
+
+    // Devolver el pedido creado junto con detalles básicos
+    return res.status(201).json({
+      success: true,
+      message: "Pedido creado",
+      pedido: {
+        id: nuevoPedido.id,
+        fecha: nuevoPedido.fecha_hora,
+        estado: nuevoPedido.estado,
+        total: nuevoPedido.monto_total,
+        metodo_pago: nuevoPedido.metodo_pago,
+        items: detalles,
+      },
+    });
   } catch (error) {
     console.error("Error creando pedido:", error);
     return res.status(500).json({ success: false, message: "Error interno al crear pedido" });
@@ -68,6 +82,23 @@ export const obtenerPedidosConDetalles = async (req, res) => {
   } catch (error) {
     console.error("Error obteniendo pedidos con detalles:", error);
     return res.status(500).json({ success: false, message: "Error interno al obtener pedidos" });
+  }
+};
+
+// Borrar todos los pedidos entregados (solo admin)
+export const borrarPedidosEntregados = async (req, res) => {
+  try {
+    // Eliminar detalles primero por integridad referencial
+    const entregados = await Pedido.findAll({ where: { estado: 'entregado' } });
+    const ids = entregados.map(p => p.id);
+    if (ids.length > 0) {
+      await DetallePedido.destroy({ where: { id_pedido: ids } });
+      await Pedido.destroy({ where: { id: ids } });
+    }
+    return res.json({ success: true, message: 'Pedidos entregados borrados', deleted: ids.length });
+  } catch (error) {
+    console.error('Error borrando pedidos entregados:', error);
+    return res.status(500).json({ success: false, message: 'Error interno al borrar pedidos entregados' });
   }
 };
 

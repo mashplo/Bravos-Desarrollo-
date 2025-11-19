@@ -31,7 +31,28 @@ export default function Pendings() {
   }
 
   const borrar_entregados = () => {
-    // Elimina los pedidos entregados del localStorage y del estado
+    // Intentar borrar en el backend si hay token, si no, caer a eliminación local
+    const token = localStorage.getItem("token");
+    const backend = import.meta.env.VITE_API_URL;
+    if (token && backend) {
+      fetch(`${backend}/api/pedidos/entregados`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` },
+      })
+        .then((r) => r.json())
+        .then(() => cargar_pedidos())
+        .catch((e) => {
+          console.error("Error borrando entregados en backend:", e);
+          // fallback a eliminación local
+          const pedidos = localStorage.getItem("pedidos") ? JSON.parse(localStorage.getItem("pedidos")) : [];
+          const nuevos = pedidos.filter(p => p.estado !== "entregado");
+          localStorage.setItem("pedidos", JSON.stringify(nuevos));
+          cargar_pedidos();
+        });
+      return;
+    }
+
+    // Fallback: Elimina los pedidos entregados del localStorage y del estado
     const pedidos = localStorage.getItem("pedidos") ? JSON.parse(localStorage.getItem("pedidos")) : [];
     const nuevos = pedidos.filter(p => p.estado !== "entregado");
     localStorage.setItem("pedidos", JSON.stringify(nuevos));
