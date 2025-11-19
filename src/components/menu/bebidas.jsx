@@ -7,7 +7,8 @@ export default function Bebidas() {
     const [bebidas, setBebidas] = useState([])
 
     function pedir(index) {
-        add_item_carrito({id: index})
+        const bebida = bebidas[index];
+        add_item_carrito({ id: bebida.id });
         toast.success("Bebida añadida al carrito")
     }
 
