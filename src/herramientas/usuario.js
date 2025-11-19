@@ -112,6 +112,43 @@ export async function crear_pedido({ items, total, metodo_pago }) {
 }
 
 export async function get_pedidos() {
+  // Si hay token, intentar obtener pedidos desde el backend (producción)
+  const token = localStorage.getItem("token");
+  const backend = import.meta.env.VITE_API_URL;
+  if (token && backend) {
+    try {
+      const resp = await fetch(`${backend}/api/pedidos`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!resp.ok) {
+        // si falla, caer a los pedidos guardados localmente
+        const pedidosLocal = localStorage.getItem("pedidos")
+          ? JSON.parse(localStorage.getItem("pedidos"))
+          : [];
+        return pedidosLocal;
+      }
+      const data = await resp.json().catch(() => []);
+      // si el backend devuelve un array de pedidos, sincronizar localStorage
+      if (Array.isArray(data)) {
+        localStorage.setItem("pedidos", JSON.stringify(data));
+        return data;
+      }
+      // si la respuesta tiene forma { pedidos: [...] }
+      if (data.pedidos && Array.isArray(data.pedidos)) {
+        localStorage.setItem("pedidos", JSON.stringify(data.pedidos));
+        return data.pedidos;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error obteniendo pedidos desde backend:", error);
+      const pedidosLocal = localStorage.getItem("pedidos")
+        ? JSON.parse(localStorage.getItem("pedidos"))
+        : [];
+      return pedidosLocal;
+    }
+  }
+
+  // fallback: pedidos locales
   const pedidos = localStorage.getItem("pedidos")
     ? JSON.parse(localStorage.getItem("pedidos"))
     : [];
@@ -119,6 +156,29 @@ export async function get_pedidos() {
 }
 
 export async function actualizar_estado_pedido({ id, nuevo_estado }) {
+  const token = localStorage.getItem("token");
+  const backend = import.meta.env.VITE_API_URL;
+
+  // Si hay token, pedir al backend que actualice el estado
+  if (token && backend) {
+    try {
+      const resp = await fetch(`${backend}/api/pedidos/${id}/estado`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ nuevo_estado }),
+      });
+      if (!resp.ok) {
+        console.error("Error actualizando estado en backend", resp.status);
+      }
+    } catch (error) {
+      console.error("Error actualizando estado en backend:", error);
+    }
+  }
+
+  // Actualizar localStorage para mantener UI responsiva
   const pedidos = localStorage.getItem("pedidos")
     ? JSON.parse(localStorage.getItem("pedidos"))
     : [];
