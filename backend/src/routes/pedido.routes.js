@@ -1,5 +1,6 @@
+
 import { Router } from "express";
-import { crearPedido, obtenerPedidosConDetalles } from "../controllers/pedido.controller.js";
+import { crearPedido, obtenerPedidosConDetalles, actualizarEstadoPedido } from "../controllers/pedido.controller.js";
 import { verifyToken } from "../middlewares/auth.js";
 
 const router = Router();
