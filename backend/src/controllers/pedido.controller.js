@@ -2,6 +2,16 @@ import { Pedido } from "../models/pedido.model.js";
 import { DetallePedido } from "../models/detalles_pedido.model.js";
 import { Producto } from "../models/producto.model.js";
 
+// Catálogo estático (coincide con el frontend `herramientas/productos.js`)
+const PRODUCT_CATALOG = [
+  { id: 0, name: "Smash Burguer", image_url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80" },
+  { id: 1, name: "Bacon Burguer", image_url: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800&auto=format&fit=crop&q=80" },
+  { id: 2, name: "Doble Carne", image_url: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=800&auto=format&fit=crop&q=80" },
+  { id: 3, name: "Americana", image_url: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop&q=80" },
+  { id: 4, name: "Carnívora", image_url: "https://images.unsplash.com/photo-1551782450-17144efb9c50?w=800&auto=format&fit=crop&q=80" },
+  { id: 5, name: "Cheese Burguer", image_url: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=800&auto=format&fit=crop&q=80" },
+];
+
 // Crear pedido (protegido por JWT en la ruta)
 export const crearPedido = async (req, res) => {
   try {
@@ -21,6 +31,8 @@ export const crearPedido = async (req, res) => {
 
     // Guardar detalles de pedido (items)
     // Aceptamos tanto `item.precio` como `item.price` desde el frontend.
+    // Además construimos la respuesta con `name` e `image_url` tomando como
+    // prioridad lo que envía el frontend o el catálogo estático.
     const detalles = items.map((item) => ({
       cantidad: item.cantidad || item.qty || 1,
       precio: item.precio ?? item.price ?? 0,
@@ -31,7 +43,19 @@ export const crearPedido = async (req, res) => {
     // Usar bulkCreate para eficiencia y evitar errores por campos undefined
     await DetallePedido.bulkCreate(detalles);
 
-    // Devolver el pedido creado junto con detalles básicos
+    // Construir items enriquecidos para la respuesta (nombre + image_url)
+    const enrichedItems = items.map((item, idx) => {
+      const catalog = PRODUCT_CATALOG.find((p) => Number(p.id) === Number(item.id));
+      return {
+        id: item.id,
+        name: item.name || catalog?.name || `Producto ${item.id}`,
+        cantidad: item.cantidad || item.qty || 1,
+        price: item.precio ?? item.price ?? 0,
+        image_url: item.image_url || catalog?.image_url || "",
+      };
+    });
+
+    // Devolver el pedido creado junto con detalles enriquecidos
     return res.status(201).json({
       success: true,
       message: "Pedido creado",
@@ -39,9 +63,9 @@ export const crearPedido = async (req, res) => {
         id: nuevoPedido.id,
         fecha: nuevoPedido.fecha_hora,
         estado: nuevoPedido.estado,
-        total: nuevoPedido.monto_total,
+        total: nuevoPedido.monto_hola || nuevoPedido.monto_total || nuevoPedido.monto_total,
         metodo_pago: nuevoPedido.metodo_pago,
-        items: detalles,
+        items: enrichedItems,
       },
     });
   } catch (error) {
@@ -61,12 +85,14 @@ export const obtenerPedidosConDetalles = async (req, res) => {
       const items = [];
       for (const detalle of detalles) {
         const producto = await Producto.findByPk(detalle.id_producto);
+        // fallback to catalog if producto not found or missing image
+        const catalog = PRODUCT_CATALOG.find((p) => Number(p.id) === Number(detalle.id_producto));
         items.push({
           id: detalle.id_producto,
-          name: producto?.nombre || "Producto",
+          name: producto?.nombre || catalog?.name || "Producto",
           cantidad: detalle.cantidad,
           price: detalle.precio,
-          image_url: producto?.image_url || "",
+          image_url: producto?.image_url || catalog?.image_url || "",
         });
       }
       pedidosConDetalles.push({
