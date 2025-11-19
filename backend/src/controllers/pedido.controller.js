@@ -70,3 +70,21 @@ export const obtenerPedidosConDetalles = async (req, res) => {
     return res.status(500).json({ success: false, message: "Error interno al obtener pedidos" });
   }
 };
+
+// Actualizar estado del pedido por id
+export const actualizarEstadoPedido = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nuevo_estado } = req.body;
+    const pedido = await Pedido.findByPk(id);
+    if (!pedido) {
+      return res.status(404).json({ success: false, message: "Pedido no encontrado" });
+    }
+    pedido.estado = nuevo_estado;
+    await pedido.save();
+    return res.json({ success: true, message: "Estado actualizado", pedido });
+  } catch (error) {
+    console.error("Error actualizando estado del pedido:", error);
+    return res.status(500).json({ success: false, message: "Error interno al actualizar estado" });
+  }
+};

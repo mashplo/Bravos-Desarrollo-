@@ -10,4 +10,7 @@ router.post("/", verifyToken, crearPedido);
 // GET /api/pedidos/  -> obtener todos los pedidos con detalles (requiere JWT)
 router.get("/", verifyToken, obtenerPedidosConDetalles);
 
+// PUT /api/pedidos/:id/estado -> actualizar el estado del pedido (requiere JWT)
+router.put("/:id/estado", verifyToken, actualizarEstadoPedido);
+
 export default router;
