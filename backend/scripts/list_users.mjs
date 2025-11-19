@@ -8,7 +8,7 @@ import { sequelize } from '../src/config/database.js';
     const users = await User.findAll({ limit: 50 });
     console.log('Usuarios encontrados:', users.length);
     users.forEach(u => {
-      console.log({ id: u.id, correo: u.correo, usuario: u.usuario, nombre: u.nombre_apellido });
+      console.log({ id: u.id, correo: u.correo, usuario: u.usuario, nombre: u.nombre_apellido, role: u.role });
     });
     process.exit(0);
   } catch (err) {
