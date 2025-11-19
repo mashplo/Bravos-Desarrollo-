@@ -336,3 +336,24 @@ export async function get_resenas() {
     return [];
   }
 }
+
+export async function validate_carrito_items() {
+  const carrito = localStorage.getItem("carrito")
+    ? JSON.parse(localStorage.getItem("carrito"))
+    : [];
+
+  const validItems = carrito.map((item) => {
+    const catalog = [
+      { id: 0, name: "Smash Burguer" },
+      { id: 1, name: "Bacon Burguer" },
+      { id: 6, name: "Coca cola" },
+      { id: 7, name: "Inka cola" },
+    ];
+
+    const found = catalog.find((p) => p.id === item.id);
+    return found ? item : null;
+  }).filter(Boolean);
+
+  localStorage.setItem("carrito", JSON.stringify(validItems));
+  return validItems;
+}
