@@ -7,8 +7,10 @@ export default function Bebidas() {
     const [bebidas, setBebidas] = useState([])
 
     function pedir(index) {
-        const bebida = bebidas[index];
-        add_item_carrito({ id: bebida.id });
+        // El catálogo del backend usa IDs 0-5 para hamburguesas y 6-11 para bebidas.
+        // Aquí mapeamos el índice del array de bebidas al ID correcto sumando 6.
+        const idProducto = 6 + index;
+        add_item_carrito({ id: idProducto });
         toast.success("Bebida añadida al carrito")
     }
 
