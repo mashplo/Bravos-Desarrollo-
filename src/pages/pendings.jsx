@@ -1,4 +1,3 @@
-import NavbarPerfil from "../components/perfil/navbar"
 import { Hamburger } from "lucide-react"
 import { useState, useEffect } from "react"
 import { get_pedidos, actualizar_estado_pedido } from "../herramientas/usuario"
@@ -24,14 +23,15 @@ export default function Pendings() {
   }
 
   const marcar_como_listo = async (id) => {
-    await actualizar_estado_pedido({ id: id, nuevo_estado: "entregado" })
-    cargar_pedidos()
+    const resp = await actualizar_estado_pedido({ id: id, nuevo_estado: "entregado" });
+    // Esperar un momento para que el backend actualice
+    setTimeout(cargar_pedidos, 500);
   }
 
 
   return (
-    <main className="flex flex-col">
-      <NavbarPerfil />
+    <main className="flex flex-col min-h-screen bg-base-200">
+      {/* Vista exclusiva para admin, sin menú ni reseñas */}
       <section className="flex flex-col md:flex-row w-full h-screen">
         <div className="w-full h-full flex flex-col">
           <div className="p-5 flex flex-col items-start justify-center">
