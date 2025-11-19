@@ -5,7 +5,7 @@ export default function RdfButton() {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
   const [format, setFormat] = useState("turtle");
-  const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+  const backend = import.meta.env.VITE_API_URL;
 
   const fetchRdf = async (fmt) => {
     setFormat(fmt);

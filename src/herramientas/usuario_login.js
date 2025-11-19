@@ -1,5 +1,5 @@
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000"; // sin path final
+const API_BASE = import.meta.env.VITE_API_URL; // sin path final
 
 // Ajusta si montaste las rutas con app.use('/api', authRoutes)
 const API = `${API_BASE}/api/auth`; //ajustao

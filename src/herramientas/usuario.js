@@ -72,7 +72,7 @@ export async function crear_pedido({ items, total, metodo_pago }) {
   }
 
   try {
-    const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+    const backend = import.meta.env.VITE_API_URL;
     const resp = await fetch(`${backend}/api/pedidos`, {
       method: "POST",
       headers: {
@@ -234,7 +234,7 @@ export async function crear_resena({ comentario, calificacion }) {
   }
 
   try {
-    const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+    const backend = import.meta.env.VITE_API_URL;
     const resp = await fetch(`${backend}/api/resenas`, {
       method: "POST",
       headers: {
@@ -266,7 +266,7 @@ export async function crear_resena({ comentario, calificacion }) {
 
 export async function get_resenas() {
   try {
-    const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+    const backend = import.meta.env.VITE_API_URL;
     const resp = await fetch(`${backend}/api/resenas`);
     if (!resp.ok) return [];
     const data = await resp.json().catch(() => []);
