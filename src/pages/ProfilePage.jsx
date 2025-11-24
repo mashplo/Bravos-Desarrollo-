@@ -179,11 +179,11 @@ export default function ProfilePage() {
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-8 text-white">
+            <div className="bg-gradient-to-r from-orange-400 to-orange-500 px-6 py-8 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <div className="bg-white p-3 rounded-full">
-                    <User className="w-8 h-8 text-orange-600" />
+                    <User className="w-8 h-8 text-orange-500" />
                   </div>
                   <div>
                     <h1 className="text-2xl font-bold">Mi Perfil</h1>
@@ -193,7 +193,7 @@ export default function ProfilePage() {
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center space-x-2 bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-50 transition-colors"
+                    className="flex items-center space-x-2 bg-white text-orange-500 px-4 py-2 rounded-lg hover:bg-orange-50 transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
                     <span>Editar</span>
