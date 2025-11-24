@@ -1,0 +1,8 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm install",
+    "startCommand": "npm run dev",
+    "path": "backend"
+  }
+}

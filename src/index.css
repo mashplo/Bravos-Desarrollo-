@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Kodchasan:wght@200;300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-kodchasan: 'Kodchasan', sans-serif;
+}
+
+@plugin "daisyui" {
+  themes: caramellatte --default
+}
+
+body {
+  font-family: 'Kodchasan', sans-serif;
+}
