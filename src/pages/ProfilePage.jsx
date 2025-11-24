@@ -155,7 +155,7 @@ export default function ProfilePage() {
         )}
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
             <p className="mt-4 text-gray-600">Cargando perfil...</p>
           </div>
         </div>
@@ -179,21 +179,21 @@ export default function ProfilePage() {
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-8 text-white">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-8 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="bg-white bg-opacity-20 p-3 rounded-full">
-                    <User className="w-8 h-8" />
+                  <div className="bg-white p-3 rounded-full">
+                    <User className="w-8 h-8 text-orange-600" />
                   </div>
                   <div>
                     <h1 className="text-2xl font-bold">Mi Perfil</h1>
-                    <p className="text-blue-100">Administra tu información de cuenta</p>
+                    <p className="text-orange-100">Administra tu información de cuenta</p>
                   </div>
                 </div>
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center space-x-2 bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+                    className="flex items-center space-x-2 bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-50 transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
                     <span>Editar</span>
@@ -233,7 +233,7 @@ export default function ProfilePage() {
                     onChange={handleInputChange}
                     disabled={!isEditing}
                     maxLength={18}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                   />
                 </div>
               </div>
@@ -251,7 +251,7 @@ export default function ProfilePage() {
                     value={formData.username}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                   />
                 </div>
               </div>
@@ -269,7 +269,7 @@ export default function ProfilePage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     disabled={!isEditing}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                   />
                 </div>
               </div>
@@ -303,7 +303,7 @@ export default function ProfilePage() {
                         name="currentPassword"
                         value={formData.currentPassword}
                         onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         placeholder="Requerida para cambiar contraseña"
                       />
                     </div>
@@ -320,7 +320,7 @@ export default function ProfilePage() {
                         name="newPassword"
                         value={formData.newPassword}
                         onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         placeholder="Mínimo 6 caracteres"
                       />
                     </div>
@@ -337,7 +337,7 @@ export default function ProfilePage() {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                         placeholder="Repite la nueva contraseña"
                       />
                     </div>
@@ -351,7 +351,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleSubmit}
                     disabled={saving}
-                    className="flex-1 flex items-center justify-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center space-x-2 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors disabled:bg-orange-400 disabled:cursor-not-allowed"
                   >
                     <Save className="w-5 h-5" />
                     <span>{saving ? 'Guardando...' : 'Guardar Cambios'}</span>
