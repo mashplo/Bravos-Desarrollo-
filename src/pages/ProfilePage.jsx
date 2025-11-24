@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { AlertCircle, CheckCircle, User, Mail, Lock, Edit2, Save, X, AtSign } from 'lucide-react';
+import { AlertCircle, CheckCircle, User, Mail, Lock, Edit2, Save, X, AtSign, ArrowLeft } from 'lucide-react';
 import Navbar from '../components/navbar';
 import { obtener_perfil, actualizar_perfil } from '../herramientas/perfil';
 import { toast } from 'sonner';
@@ -138,10 +138,21 @@ export default function ProfilePage() {
     setMessage({ type: '', text: '' });
   };
 
+  const isAdmin = user?.role === 'admin';
+
   if (loading) {
     return (
       <main>
-        <Navbar />
+        {!isAdmin && <Navbar />}
+        {isAdmin && (
+          <nav className="flex flex-row justify-between items-center p-4 bg-white shadow-md">
+            <div className="text-2xl font-bold">Bravos</div>
+            <a href="/pendings" className="btn btn-ghost gap-2">
+              <ArrowLeft size={20} />
+              Volver a Pedidos
+            </a>
+          </nav>
+        )}
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -154,7 +165,16 @@ export default function ProfilePage() {
 
   return (
     <main>
-      <Navbar />
+      {!isAdmin && <Navbar />}
+      {isAdmin && (
+        <nav className="flex flex-row justify-between items-center p-4 bg-white shadow-md">
+          <div className="text-2xl font-bold">Bravos</div>
+          <a href="/pendings" className="btn btn-ghost gap-2">
+            <ArrowLeft size={20} />
+            Volver a Pedidos
+          </a>
+        </nav>
+      )}
       <div className="min-h-screen bg-gray-50 py-8 px-4">
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
