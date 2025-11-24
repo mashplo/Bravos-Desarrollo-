@@ -9,7 +9,8 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.routes.js";
 import pedidosRoutes from "./routes/pedido.routes.js";
 import resenaRoutes from "./routes/resena.routes.js";
-
+//para pagina de perfil
+import profileRoutes from "./routes/profile.routes.js";
 // No cargamos dotenv aquí: las variables de entorno las gestiona Railway/entorno de despliegue
 
 // Para obtener __dirname en ES modules
@@ -25,7 +26,8 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/pedidos", pedidosRoutes);
 app.use("/api/resenas", resenaRoutes);
-
+//apis de perfil
+app.use("/api", profileRoutes);
 // Sincronizar modelos (solo al inicio)
 sequelize.sync().then(() => {
   console.log("DB lista");
