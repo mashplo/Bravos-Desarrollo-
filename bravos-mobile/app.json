@@ -3,7 +3,7 @@
     "name": "BravosMobile",
     "slug": "bravos-mobile",
     "version": "1.0.0",
-    "platforms": ["android"],
+    "platforms": ["android", "ios"],
     "orientation": "portrait",
     "entryPoint": "./index.js"
   }
