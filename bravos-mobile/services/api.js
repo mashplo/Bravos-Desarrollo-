@@ -1,13 +1,20 @@
+<<<<<<< HEAD
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_URL = "https://bravos-desarrollo.vercel.app/api"; // Cambia por tu endpoint real
+=======
+import axios from 'axios';
+
+const API_URL = 'https://bravos-desarrollo.vercel.app/api'; // Cambia por tu endpoint real
+>>>>>>> 11377c2af97db6237f4bdf17ef74d4d8d04faf9e
 
 const api = axios.create({
   baseURL: API_URL,
   timeout: 10000,
 });
 
+<<<<<<< HEAD
 // Attach token to each request if present
 api.interceptors.request.use(async (config) => {
   try {
@@ -22,4 +29,6 @@ api.interceptors.request.use(async (config) => {
   return config;
 });
 
+=======
+>>>>>>> 11377c2af97db6237f4bdf17ef74d4d8d04faf9e
 export default api;

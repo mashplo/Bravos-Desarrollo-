@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -27,10 +28,23 @@ function HeaderBrand() {
     </View>
   );
 }
+=======
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { PaperProvider } from 'react-native-paper';
+import WelcomeScreen from './screens/WelcomeScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import LoginScreen from './screens/LoginScreen';
+import MenuScreen from './screens/MenuScreen';
+import OrderSummaryScreen from './screens/OrderSummaryScreen';
+import ReviewsScreen from './screens/ReviewsScreen';
+>>>>>>> 11377c2af97db6237f4bdf17ef74d4d8d04faf9e
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+<<<<<<< HEAD
   const theme = {
     ...DefaultTheme,
     colors: {
@@ -59,12 +73,23 @@ export default function App() {
               headerTitleAlign: "left",
             }}
           />
+=======
+  return (
+    <PaperProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Welcome">
+          <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Menu" component={MenuScreen} />
+>>>>>>> 11377c2af97db6237f4bdf17ef74d4d8d04faf9e
           <Stack.Screen name="OrderSummary" component={OrderSummaryScreen} />
           <Stack.Screen name="Reviews" component={ReviewsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
   );
+<<<<<<< HEAD
 }
 
 const styles = StyleSheet.create({
@@ -72,3 +97,6 @@ const styles = StyleSheet.create({
   headerLogo: { width: 36, height: 36, resizeMode: "contain", marginRight: 8 },
   headerText: { fontWeight: "800", fontSize: 18 },
 });
+=======
+}
+>>>>>>> 11377c2af97db6237f4bdf17ef74d4d8d04faf9e

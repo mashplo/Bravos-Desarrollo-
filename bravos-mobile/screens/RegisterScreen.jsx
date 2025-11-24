@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 import { View, StyleSheet, Alert, Image } from "react-native";
 import { Text, Button, TextInput } from "react-native-paper";
@@ -23,11 +24,26 @@ export default function RegisterScreen({ navigation }) {
     }
     try {
       const res = await api.post("/auth/register", {
+=======
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, Alert } from 'react-native';
+import api from '../services/api';
+
+export default function RegisterScreen({ navigation }) {
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleRegister = async () => {
+    try {
+      const res = await api.post('/auth/register', {
+>>>>>>> 11377c2af97db6237f4bdf17ef74d4d8d04faf9e
         nombre,
         email,
         password,
       });
       if (res.data.success) {
+<<<<<<< HEAD
         Alert.alert("Registro exitoso", "Ya puedes iniciar sesión");
         navigation.navigate("Login");
       } else {
@@ -35,10 +51,20 @@ export default function RegisterScreen({ navigation }) {
       }
     } catch (err) {
       Alert.alert("Error", "No se pudo registrar");
+=======
+        Alert.alert('Registro exitoso', 'Ya puedes iniciar sesión');
+        navigation.navigate('Login');
+      } else {
+        Alert.alert('Error', res.data.message || 'No se pudo registrar');
+      }
+    } catch (err) {
+      Alert.alert('Error', 'No se pudo registrar');
+>>>>>>> 11377c2af97db6237f4bdf17ef74d4d8d04faf9e
     }
   };
 
   return (
+<<<<<<< HEAD
     <View style={styles.container}>
       <View style={styles.content}>
         <Image source={LOGO} style={styles.logo} resizeMode="contain" />
@@ -134,3 +160,15 @@ const styles = StyleSheet.create({
   button: { borderRadius: 40, marginTop: 6 },
   buttonContent: { height: 52 },
 });
+=======
+    <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
+      <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 24 }}>Registro</Text>
+      <TextInput placeholder="Nombre" value={nombre} onChangeText={setNombre} style={{ marginBottom: 12, borderBottomWidth: 1 }} />
+      <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={{ marginBottom: 12, borderBottomWidth: 1 }} />
+      <TextInput placeholder="Contraseña" value={password} onChangeText={setPassword} secureTextEntry style={{ marginBottom: 24, borderBottomWidth: 1 }} />
+      <Button title="Registrarse" onPress={handleRegister} />
+      <Button title="Ya tengo cuenta" onPress={() => navigation.navigate('Login')} />
+    </View>
+  );
+}
+>>>>>>> 11377c2af97db6237f4bdf17ef74d4d8d04faf9e
