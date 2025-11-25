@@ -17,6 +17,7 @@ export default function LoginScreenNew({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -89,9 +90,15 @@ export default function LoginScreenNew({ navigation }) {
           label="Contraseña"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
+          secureTextEntry={!showPassword}
           mode="flat"
           style={styles.input}
+          right={
+            <TextInput.Icon
+              icon={showPassword ? "eye-off" : "eye"}
+              onPress={() => setShowPassword((p) => !p)}
+            />
+          }
         />
 
         <Button

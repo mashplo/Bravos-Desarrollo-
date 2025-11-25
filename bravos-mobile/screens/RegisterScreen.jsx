@@ -11,6 +11,8 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleRegister = async () => {
     if (!nombre || !username || !email || !password) {
@@ -103,16 +105,28 @@ export default function RegisterScreen({ navigation }) {
             value={password}
             onChangeText={setPassword}
             mode="flat"
-            secureTextEntry
+            secureTextEntry={!showPassword}
             style={styles.input}
+            right={
+              <TextInput.Icon
+                icon={showPassword ? "eye-off" : "eye"}
+                onPress={() => setShowPassword((p) => !p)}
+              />
+            }
           />
           <TextInput
             label="Repite la contraseña"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
             mode="flat"
-            secureTextEntry
+            secureTextEntry={!showConfirm}
             style={styles.input}
+            right={
+              <TextInput.Icon
+                icon={showConfirm ? "eye-off" : "eye"}
+                onPress={() => setShowConfirm((p) => !p)}
+              />
+            }
           />
 
           <Button

@@ -8,6 +8,8 @@ export default function Registrarse() {
     const [username, set_username] = useState('')
     const [password, set_password] = useState('')
     const [password_confirm, set_password_confirm] = useState('')
+    const [showPassword, set_showPassword] = useState(false)
+    const [showConfirm, set_showConfirm] = useState(false)
 
     const handleRegistro = async (e) => {
         e.preventDefault()
@@ -82,23 +84,41 @@ export default function Registrarse() {
                 </div>
                 <div className="flex flex-col">
                     <span className="text-sm">Contraseña</span>
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        className="input"
-                        value={password}
-                        onChange={(e) => set_password(e.target.value)}
-                    />                    
+                    <div className="relative">
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="Password"
+                            className="input pr-16"
+                            value={password}
+                            onChange={(e) => set_password(e.target.value)}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => set_showPassword(p => !p)}
+                            className="absolute top-1/2 -translate-y-1/2 right-2 btn btn-xs btn-ghost"
+                        >
+                            {showPassword ? 'Ocultar' : 'Ver'}
+                        </button>
+                    </div>                    
                 </div>
                 <div className="flex flex-col">
                     <span className="text-sm">Repite la contraseña</span>
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        className="input"
-                        value={password_confirm}
-                        onChange={(e) => set_password_confirm(e.target.value)}
-                    />                    
+                    <div className="relative">
+                        <input
+                            type={showConfirm ? 'text' : 'password'}
+                            placeholder="Password"
+                            className="input pr-16"
+                            value={password_confirm}
+                            onChange={(e) => set_password_confirm(e.target.value)}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => set_showConfirm(p => !p)}
+                            className="absolute top-1/2 -translate-y-1/2 right-2 btn btn-xs btn-ghost"
+                        >
+                            {showConfirm ? 'Ocultar' : 'Ver'}
+                        </button>
+                    </div>                    
                 </div>
                 <button
                     type="submit"

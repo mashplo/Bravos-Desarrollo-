@@ -6,6 +6,7 @@ import { toast, Toaster } from "sonner";
 export default function Login() {
   const [email, set_email] = useState("");
   const [password, set_password] = useState("");
+  const [showPassword, set_showPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
@@ -75,12 +76,21 @@ export default function Login() {
         </div>
         <div className="flex flex-col">
           <span className="text-sm">Contraseña</span>
-          <input
-            type="password"
-            className="input"
-            value={password}
-            onChange={(e) => set_password(e.target.value)}
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="input pr-16"
+              value={password}
+              onChange={(e) => set_password(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => set_showPassword(p => !p)}
+              className="absolute top-1/2 -translate-y-1/2 right-2 btn btn-xs btn-ghost"
+            >
+              {showPassword ? "Ocultar" : "Ver"}
+            </button>
+          </div>
         </div>
         <button type="submit" className="btn btn-primary">
           Iniciar sesión
