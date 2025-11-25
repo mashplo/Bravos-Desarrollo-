@@ -197,3 +197,25 @@ export const obtenerHistorialCliente = async (req, res) => {
     return res.status(500).json({ success: false, message: "Error interno al obtener historial" });
   }
 };
+
+// SOLO ADMIN - Reiniciar contador de pedidos
+export const reiniciarContadorPedidos = async (req, res) => {
+  try {
+    // Verificar que sea admin
+    if (req.user?.role !== 'admin') {
+      return res.status(403).json({ success: false, message: "Solo administradores pueden reiniciar el contador" });
+    }
+
+    // Borrar todos los pedidos y detalles
+    await DetallePedido.destroy({ where: {} });
+    await Pedido.destroy({ where: {} });
+    
+    // Reiniciar auto-increment (solo funciona en MySQL)
+    await Pedido.sequelize.query("ALTER TABLE pedidos AUTO_INCREMENT = 1");
+    
+    return res.json({ success: true, message: "Contador de pedidos reiniciado a 1" });
+  } catch (error) {
+    console.error("Error reiniciando contador:", error);
+    return res.status(500).json({ success: false, message: "Error interno al reiniciar contador" });
+  }
+};

@@ -74,11 +74,46 @@ export default function Pendings() {
     window.location.href = "/login";
   }
 
+  const reiniciar_contador = async () => {
+    if (!confirm("⚠️ ADVERTENCIA: Esto borrará TODOS los pedidos y reiniciará el contador a 1. ¿Estás seguro?")) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const backend = import.meta.env.VITE_API_URL || "https://bravos-backend-production.up.railway.app";
+      
+      const response = await fetch(`${backend}/api/pedidos/reset-counter`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        alert("✅ Contador reiniciado exitosamente. El próximo pedido será #1");
+        cargar_pedidos();
+      } else {
+        alert("❌ Error: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error reiniciando contador:", error);
+      alert("❌ Error al reiniciar el contador");
+    }
+  }
+
   return (
     <main className="flex flex-col min-h-screen bg-base-200">
       <nav className="flex flex-row justify-between items-center p-4 bg-white shadow-md">
         <div className="text-2xl font-bold">Bravos</div>
-        <button className="btn btn-error" onClick={cerrar_sesion}>Cerrar sesión</button>
+        <div className="flex gap-3">
+          <button className="btn btn-warning btn-sm" onClick={reiniciar_contador}>
+            Reiniciar Contador
+          </button>
+          <button className="btn btn-error" onClick={cerrar_sesion}>Cerrar sesión</button>
+        </div>
       </nav>
       <section className="flex flex-col md:flex-row w-full h-screen">
         <div className="w-full h-full flex flex-col">

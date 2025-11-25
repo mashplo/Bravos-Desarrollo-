@@ -1,6 +1,6 @@
 
 import { Router } from "express";
-import { crearPedido, obtenerPedidosConDetalles, actualizarEstadoPedido, borrarPedidosEntregados, obtenerHistorialCliente } from "../controllers/pedido.controller.js";
+import { crearPedido, obtenerPedidosConDetalles, actualizarEstadoPedido, borrarPedidosEntregados, obtenerHistorialCliente, reiniciarContadorPedidos } from "../controllers/pedido.controller.js";
 import { verifyToken } from "../middlewares/auth.js";
 
 const router = Router();
@@ -19,5 +19,8 @@ router.put("/:id/estado", verifyToken, actualizarEstadoPedido);
 
 // DELETE /api/pedidos/entregados -> borrar pedidos entregados (requiere JWT)
 router.delete("/entregados", verifyToken, borrarPedidosEntregados);
+
+// POST /api/pedidos/reset-counter -> SOLO ADMIN - reiniciar contador de pedidos
+router.post("/reset-counter", verifyToken, reiniciarContadorPedidos);
 
 export default router;
