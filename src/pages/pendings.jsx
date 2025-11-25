@@ -96,7 +96,10 @@ export default function Pendings() {
                   pedidos_pendientes.map((pedido) => (
                     <li key={pedido.id} className="flex flex-col gap-3 my-5 p-4 border rounded-lg bg-base-100 shadow">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-500">Pedido #{pedido.id}</span>
+                        <div className="flex flex-col">
+                          <span className="text-sm text-gray-500">Pedido #{pedido.id}</span>
+                          <span className="text-xs text-gray-400">Pago: {pedido.metodo_pago}</span>
+                        </div>
                         <span className={`badge ${pedido.estado === 'enviado' ? 'badge-info' : 'badge-warning'}`}>
                           {pedido.estado === 'enviado' ? 'Enviado' : 'En preparación'}
                         </span>
