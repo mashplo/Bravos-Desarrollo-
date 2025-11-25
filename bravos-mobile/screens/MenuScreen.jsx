@@ -15,6 +15,7 @@ import { Text, Card, Button } from "react-native-paper";
 const HEADER_IMAGE = require("../assets/Hamburguesa-Texana-1200x709.avif");
 
 const productosDemo = [
+  // Hamburguesas
   {
     id: 1,
     name: "Smash Burger",
@@ -43,7 +44,15 @@ const productosDemo = [
     image: require("../assets/N5EPKUWMIVH4RCPNDM7OP5OKQQ.jpeg"),
     category: "hamburguesas",
   },
-
+  // Burger faltante restaurada
+  {
+    id: 5,
+    name: "Hamburguesa Doble Queso",
+    price: 34.0,
+    image: require("../assets/burger.png"),
+    category: "hamburguesas",
+  },
+  // Bebidas
   {
     id: 6,
     name: "Fanta Lata",
@@ -76,6 +85,7 @@ const productosDemo = [
     id: 10,
     name: "Pepsi Lata",
     price: 6.0,
+    // Restaurar imagen, usar alternativa si la anterior faltaba
     image: require("../assets/w=1500,h=1500,fit=pad (1).webp"),
     category: "bebidas",
   },
@@ -233,8 +243,9 @@ export default function MenuScreen({ navigation, route }) {
                 keyExtractor={(i) => i.id.toString()}
                 renderItem={renderItem}
                 horizontal
-                showsHorizontalScrollIndicator={true}
+                showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.bebidasList}
+                ListEmptyComponent={<Text style={{padding:12}}>Sin bebidas</Text>}
               />
             </View>
           </View>

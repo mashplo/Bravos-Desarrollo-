@@ -39,7 +39,14 @@ export default function ReviewsScreen() {
   return (
     <Provider>
       <View style={styles.container}>
-        <Button mode="contained" onPress={() => setModalVisible(true)} style={styles.addButton}>
+        <Button
+          mode="contained"
+          onPress={() => setModalVisible(true)}
+          style={styles.addButton}
+          buttonColor="#7a4f1d"
+          contentStyle={{ height: 46 }}
+          icon="plus"
+        >
           Agregar reseña
         </Button>
         <FlatList
@@ -75,7 +82,11 @@ export default function ReviewsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fff", padding: 16 },
-  addButton: { marginBottom: 16, borderRadius: 40 },
+  addButton: {
+    marginBottom: 16,
+    borderRadius: 40,
+    elevation: 2,
+  },
   card: { marginBottom: 12 },
   modal: { backgroundColor: "white", padding: 20, borderRadius: 8 },
 });
