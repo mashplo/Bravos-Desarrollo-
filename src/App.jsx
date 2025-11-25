@@ -6,6 +6,7 @@ import Login from "./pages/login"
 import Registrarse from "./pages/registrarse"
 import Pendings from "./pages/pendings"
 import Resenas from "./pages/resenas"
+import Historial from "./pages/historial"
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registrarse" element={<Registrarse />} />
         <Route path="/pendings" element={<Pendings />} />
+        <Route path="/historial" element={<Historial />} />
       </Routes>
     </BrowserRouter>
   )

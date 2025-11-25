@@ -153,3 +153,47 @@ export const actualizarEstadoPedido = async (req, res) => {
     return res.status(500).json({ success: false, message: "Error interno al actualizar estado" });
   }
 };
+
+// Obtener historial de pedidos del cliente autenticado
+export const obtenerHistorialCliente = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Usuario no autenticado" });
+    }
+
+    const pedidos = await Pedido.findAll({
+      where: { id_cliente: userId },
+      order: [['fecha_hora', 'DESC']]
+    });
+
+    const pedidosConDetalles = [];
+    for (const pedido of pedidos) {
+      const detalles = await DetallePedido.findAll({ where: { id_pedido: pedido.id } });
+      const items = [];
+      for (const detalle of detalles) {
+        const producto = await Producto.findByPk(detalle.id_producto);
+        const catalog = PRODUCT_CATALOG.find((p) => Number(p.id) === Number(detalle.id_producto));
+        items.push({
+          id: detalle.id_producto,
+          name: producto?.nombre || catalog?.name || "Producto",
+          cantidad: detalle.cantidad,
+          price: detalle.precio,
+          image_url: producto?.image_url || catalog?.image_url || "",
+        });
+      }
+      pedidosConDetalles.push({
+        id: pedido.id,
+        fecha: pedido.fecha_hora,
+        estado: pedido.estado,
+        total: pedido.monto_total,
+        metodo_pago: pedido.metodo_pago,
+        items,
+      });
+    }
+    return res.json({ success: true, pedidos: pedidosConDetalles });
+  } catch (error) {
+    console.error("Error obteniendo historial del cliente:", error);
+    return res.status(500).json({ success: false, message: "Error interno al obtener historial" });
+  }
+};

@@ -108,6 +108,8 @@ export default function MenuScreen({ navigation, route }) {
   const [productos, setProductos] = useState([]);
   const [cart, setCart] = useState([]);
   const listRef = useRef(null);
+  const bebidasListRef = useRef(null);
+  const bebidasScrollPosition = useRef(0);
   const [orderSuccessVisible, setOrderSuccessVisible] = useState(false);
 
   useEffect(() => {
@@ -128,29 +130,34 @@ export default function MenuScreen({ navigation, route }) {
       }
       return [...prev, { ...item, qty: 1 }];
     });
+    
+    // Restaurar posición del scroll de bebidas después de agregar
+    setTimeout(() => {
+      if (bebidasListRef.current && bebidasScrollPosition.current > 0) {
+        bebidasListRef.current.scrollToOffset({
+          offset: bebidasScrollPosition.current,
+          animated: false,
+        });
+      }
+    }, 50);
   };
 
   const total = cart.reduce((s, it) => s + it.price * it.qty, 0);
 
   useEffect(() => {
-    if (route && route.params && route.params.orderSuccess) {
+    if (route?.params?.orderSuccess) {
       setOrderSuccessVisible(true);
-      // clear param so it doesn't re-trigger
-      try {
-        navigation.setParams({ orderSuccess: false });
-      } catch (e) {}
       setTimeout(() => setOrderSuccessVisible(false), 3000);
     }
-  }, [route]);
+    if (route?.params?.clearCart) {
+      setCart([]);
+    }
+  }, [route?.params?.orderSuccess, route?.params?.clearCart]);
 
   const renderItem = ({ item }) => (
     <Card style={styles.itemCard}>
       <Card.Content style={styles.itemContent}>
-        {item.image ? (
-          <Image source={item.image} style={styles.itemImage} />
-        ) : (
-          <Image source={{ uri: item.image_url }} style={styles.itemImage} />
-        )}
+        <Image source={{ uri: item.image_url }} style={styles.itemImage} />
         <View style={styles.itemText}>
           <Text style={styles.itemTitle}>{item.name}</Text>
           <Text>S/{item.price}</Text>
@@ -167,11 +174,7 @@ export default function MenuScreen({ navigation, route }) {
 
   const renderGridItem = ({ item }) => (
     <View style={styles.gridItem}>
-      {item.image ? (
-        <Image source={item.image} style={styles.gridImage} />
-      ) : (
-        <Image source={{ uri: item.image_url }} style={styles.gridImage} />
-      )}
+      <Image source={{ uri: item.image_url }} style={styles.gridImage} />
       <Text style={styles.gridTitle}>{item.name}</Text>
       <View style={styles.gridRow}>
         <Text style={styles.gridPrice}>S/{item.price}</Text>
@@ -230,6 +233,12 @@ export default function MenuScreen({ navigation, route }) {
               >
                 <Text>Reseñas</Text>
               </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.navBtn}
+                onPress={() => navigation.navigate("Historial")}
+              >
+                <Text>Historial</Text>
+              </TouchableOpacity>
             </View>
             <View style={styles.section}>
               <View style={styles.titleRow}>
@@ -252,6 +261,7 @@ export default function MenuScreen({ navigation, route }) {
               </View>
 
               <FlatList
+                ref={bebidasListRef}
                 data={productos.filter((p) => p.category === "bebidas")}
                 keyExtractor={(i) => i.id.toString()}
                 renderItem={renderItem}
@@ -259,6 +269,15 @@ export default function MenuScreen({ navigation, route }) {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.bebidasList}
                 ListEmptyComponent={<Text style={{padding:12}}>Sin bebidas</Text>}
+                onScroll={(e) => {
+                  bebidasScrollPosition.current = e.nativeEvent.contentOffset.x;
+                }}
+                scrollEventThrottle={16}
+                getItemLayout={(data, index) => ({
+                  length: 180,
+                  offset: 180 * index,
+                  index,
+                })}
               />
             </View>
           </View>

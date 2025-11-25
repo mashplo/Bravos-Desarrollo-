@@ -1,6 +1,6 @@
 
 import { Router } from "express";
-import { crearPedido, obtenerPedidosConDetalles, actualizarEstadoPedido, borrarPedidosEntregados } from "../controllers/pedido.controller.js";
+import { crearPedido, obtenerPedidosConDetalles, actualizarEstadoPedido, borrarPedidosEntregados, obtenerHistorialCliente } from "../controllers/pedido.controller.js";
 import { verifyToken } from "../middlewares/auth.js";
 
 const router = Router();
@@ -10,6 +10,9 @@ router.post("/", verifyToken, crearPedido);
 
 // GET /api/pedidos/  -> obtener todos los pedidos con detalles (requiere JWT)
 router.get("/", verifyToken, obtenerPedidosConDetalles);
+
+// GET /api/pedidos/historial  -> obtener historial del cliente autenticado
+router.get("/historial", verifyToken, obtenerHistorialCliente);
 
 // PUT /api/pedidos/:id/estado -> actualizar el estado del pedido (requiere JWT)
 router.put("/:id/estado", verifyToken, actualizarEstadoPedido);

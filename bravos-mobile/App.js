@@ -11,6 +11,7 @@ import LoginScreen from "./screens/LoginScreenNew";
 import MenuScreen from "./screens/MenuScreen";
 import OrderSummaryScreen from "./screens/OrderSummaryScreen";
 import ReviewsScreen from "./screens/ReviewsScreen";
+import HistorialScreen from "./screens/HistorialScreen";
 
 const LOGO = require("./assets/logo.png");
 
@@ -49,6 +50,7 @@ export default function App() {
           <Stack.Screen name="Menu" component={MenuScreen} />
           <Stack.Screen name="OrderSummary" component={OrderSummaryScreen} />
           <Stack.Screen name="Reviews" component={ReviewsScreen} />
+          <Stack.Screen name="Historial" component={HistorialScreen} options={{ title: "Mi Historial" }} />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

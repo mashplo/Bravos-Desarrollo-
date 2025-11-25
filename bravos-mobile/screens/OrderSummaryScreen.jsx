@@ -70,8 +70,9 @@ export default function OrderSummaryScreen({ navigation, route }) {
         metodo_pago: selectedPayment,
       });
       console.log("Pedido creado:", res.data);
+      setPedido([]);
       setShowModal(false);
-      navigation.navigate("Menu", { orderSuccess: true });
+      navigation.navigate("Menu", { orderSuccess: true, clearCart: true });
     } catch (err) {
       console.error("Error creando pedido:", err.response?.data || err.message);
       Alert.alert(
@@ -86,7 +87,9 @@ export default function OrderSummaryScreen({ navigation, route }) {
   const renderRow = ({ item }) => (
     <View style={styles.row}>
       <View style={styles.rowLeft}>
-        {item.image ? (
+        {item.image_url ? (
+          <Image source={{ uri: item.image_url }} style={styles.thumb} />
+        ) : item.image ? (
           <Image source={item.image} style={styles.thumb} />
         ) : (
           <View style={styles.thumbPlaceholder} />

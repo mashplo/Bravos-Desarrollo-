@@ -15,13 +15,22 @@ export default function Pendings() {
 
   const cargar_pedidos = async () => {
     const todos_pedidos = await get_pedidos()
-    const pendientes = todos_pedidos.filter(p => p.estado === "en_preparacion")
+    const pendientes = todos_pedidos.filter(p => p.estado === "en_preparacion" || p.estado === "enviado")
     const entregados = todos_pedidos.filter(p => p.estado === "entregado")
     set_pedidos_pendientes(pendientes)
     set_pedidos_entregados(entregados)
   }
 
-  const marcar_como_listo = async (id) => {
+  const marcar_como_enviado = async (id) => {
+    try {
+      await actualizar_estado_pedido({ id: id, nuevo_estado: "enviado" });
+      setTimeout(cargar_pedidos, 500);
+    } catch (error) {
+      alert("No se pudo actualizar el estado del pedido. Intenta de nuevo.");
+    }
+  }
+
+  const marcar_como_entregado = async (id) => {
     try {
       await actualizar_estado_pedido({ id: id, nuevo_estado: "entregado" });
       setTimeout(cargar_pedidos, 500);
@@ -88,7 +97,9 @@ export default function Pendings() {
                     <li key={pedido.id} className="flex flex-col gap-3 my-5 p-4 border rounded-lg bg-base-100 shadow">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm text-gray-500">Pedido #{pedido.id}</span>
-                        <span className="badge badge-warning">En preparación</span>
+                        <span className={`badge ${pedido.estado === 'enviado' ? 'badge-info' : 'badge-warning'}`}>
+                          {pedido.estado === 'enviado' ? 'Enviado' : 'En preparación'}
+                        </span>
                       </div>
                       {pedido.items.map((item, idx) => (
                         <div key={idx} className="flex flex-row gap-5">
@@ -106,12 +117,22 @@ export default function Pendings() {
                       <div className="divider my-1"></div>
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-bold">Total: S/{pedido.total.toFixed(2)}</span>
-                        <button 
-                          onClick={() => marcar_como_listo(pedido.id)}
-                          className="btn btn-success btn-sm"
-                        >
-                          Listo
-                        </button>
+                        <div className="flex gap-2">
+                          {pedido.estado === 'en_preparacion' && (
+                            <button 
+                              onClick={() => marcar_como_enviado(pedido.id)}
+                              className="btn btn-info btn-sm"
+                            >
+                              Enviado
+                            </button>
+                          )}
+                          <button 
+                            onClick={() => marcar_como_entregado(pedido.id)}
+                            className="btn btn-success btn-sm"
+                          >
+                            Entregado
+                          </button>
+                        </div>
                       </div>
                     </li>
                   ))

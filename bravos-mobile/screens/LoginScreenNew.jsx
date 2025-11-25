@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Alert, Image } from "react-native";
-import { Text, Button, TextInput, Card, ActivityIndicator } from "react-native-paper";
+import {
+  Text,
+  Button,
+  TextInput,
+  Card,
+  ActivityIndicator,
+} from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../services/api";
 
@@ -32,16 +38,17 @@ export default function LoginScreenNew({ navigation }) {
       if (res.data && res.data.success && res.data.token) {
         // Guardar token en AsyncStorage
         await AsyncStorage.setItem("jwt", res.data.token);
-        
+
         // Guardar datos del usuario
         await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
-        
+
         console.log("Login exitoso, token guardado");
         Alert.alert("Bienvenido", `Hola ${res.data.user.nombre}`, [
           {
             text: "OK",
-            onPress: () => navigation.navigate("Menu", { initialCategory: "hamburguesas" })
-          }
+            onPress: () =>
+              navigation.navigate("Menu", { initialCategory: "hamburguesas" }),
+          },
         ]);
       } else {
         Alert.alert("Error", res.data?.message || "Credenciales incorrectas");
@@ -49,7 +56,8 @@ export default function LoginScreenNew({ navigation }) {
     } catch (err) {
       console.error("Error en login:", err);
       console.error("Detalles:", err.response?.data);
-      const errorMsg = err.response?.data?.message || "No se pudo conectar con el servidor";
+      const errorMsg =
+        err.response?.data?.message || "No se pudo conectar con el servidor";
       Alert.alert("Error", errorMsg);
     } finally {
       setLoading(false);

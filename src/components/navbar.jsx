@@ -49,6 +49,13 @@ export default function Navbar() {
               Reseñas
             </a>
           </li>
+          {usuario_actual && (
+            <li>
+              <a href="/historial" className="text-gray-800 hover:text-black">
+                Mis Pedidos
+              </a>
+            </li>
+          )}
         </ul>
       </div>
       <div className="flex flex-row items-center gap-3">
