@@ -16,78 +16,90 @@ import { Text, Card, Button } from "react-native-paper";
 const HEADER_IMAGE = require("../assets/ChatGPT Image 10 nov 2025, 10_21_18.png");
 
 const productosDemo = [
-  // Hamburguesas
+  // Hamburguesas - SINCRONIZADAS CON WEB
+  {
+    id: 0,
+    name: "Smash Burguer",
+    price: 25.99,
+    image_url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80",
+    category: "hamburguesas",
+  },
   {
     id: 1,
-    name: "Smash Burger",
-    price: 25.0,
-    image: require("../assets/imagen_convertida.jpg"),
+    name: "Bacon Burguer",
+    price: 26.99,
+    image_url: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800&auto=format&fit=crop&q=80",
     category: "hamburguesas",
   },
   {
     id: 2,
-    name: "Classic Burger",
-    price: 27.0,
-    image: require("../assets/ChatGPT Image 6 sept 2025, 08_37_03 p.m..png"),
+    name: "Doble Carne",
+    price: 27.99,
+    image_url: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=800&auto=format&fit=crop&q=80",
     category: "hamburguesas",
   },
   {
     id: 3,
-    name: "Texana Especial",
-    price: 30.0,
-    image: require("../assets/istockphoto-520410807-612x612.jpg"),
+    name: "Americana",
+    price: 26.49,
+    image_url: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop&q=80",
     category: "hamburguesas",
   },
   {
     id: 4,
-    name: "Bravos Signature",
-    price: 32.0,
-    image: require("../assets/Hamburguesa-Texana-1200x709.avif"), // actualizado según solicitud
+    name: "Carnívora",
+    price: 28.99,
+    image_url: "https://images.unsplash.com/photo-1551782450-17144efb9c50?w=800&auto=format&fit=crop&q=80",
     category: "hamburguesas",
   },
-  // Burger faltante restaurada
   {
     id: 5,
-    name: "Hamburguesa Doble Queso",
-    price: 34.0,
-    image: require("../assets/N5EPKUWMIVH4RCPNDM7OP5OKQQ.jpeg"), // Bravos Signature image
+    name: "Cheese Burguer",
+    price: 28.99,
+    image_url: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=800&auto=format&fit=crop&q=80",
     category: "hamburguesas",
   },
-  // Bebidas
+  // Bebidas - SINCRONIZADAS CON WEB
   {
     id: 6,
-    name: "Fanta Lata",
-    price: 5.0,
-    image: require("../assets/Gaseosa-Fanta-Original-Lata-355-ml-1-120335414.webp"),
+    name: "Coca cola",
+    price: 5.99,
+    image_url: "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&auto=format&fit=crop&q=80",
     category: "bebidas",
   },
   {
     id: 7,
-    name: "Sprite Lata",
-    price: 5.0,
-    image: require("../assets/Gaseosa-Sprite-Lata-355ml-1-30792727.webp"),
+    name: "Inka cola",
+    price: 5.99,
+    image_url: "https://mir-s3-cdn-cf.behance.net/projects/404/069e01209605969.Y3JvcCw0MjI1LDMzMDUsOTYyLDA.gif",
     category: "bebidas",
   },
   {
     id: 8,
-    name: "Inka Kola Lata",
-    price: 3.5,
-    image: require("../assets/dsc007859015-600x600.jpg"),
+    name: "Pepsi",
+    price: 5.49,
+    image_url: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=800&auto=format&fit=crop&q=80",
     category: "bebidas",
   },
   {
     id: 9,
-    name: "Coca Cola Lata",
-    price: 6.0,
-    image: require("../assets/w=1500,h=1500,fit=pad.webp"),
+    name: "Jugo de Fresa",
+    price: 7.99,
+    image_url: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=800&auto=format&fit=crop&q=80",
     category: "bebidas",
   },
   {
     id: 10,
-    name: "Pepsi Lata",
-    price: 6.0,
-    // Restaurar imagen, usar alternativa si la anterior faltaba
-    image: require("../assets/w=1500,h=1500,fit=pad (1).webp"),
+    name: "Jugo de Mango",
+    price: 7.99,
+    image_url: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=800&auto=format&fit=crop&q=80",
+    category: "bebidas",
+  },
+  {
+    id: 11,
+    name: "Jugo de Piña",
+    price: 7.99,
+    image_url: "https://media.istockphoto.com/id/178035953/es/foto/preparados-jugo-de-pi%C3%B1a.jpg?s=612x612&w=0&k=20&c=Ugq7N5exScyAuCLm_Sc0FvSOJlpZlV7n_Y_eby2Iark=",
     category: "bebidas",
   },
 ];

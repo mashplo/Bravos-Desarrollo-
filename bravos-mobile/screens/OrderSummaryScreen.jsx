@@ -6,8 +6,10 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+  Alert,
 } from "react-native";
-import { Text, Card, Button } from "react-native-paper";
+import { Text, Card, Button, ActivityIndicator } from "react-native-paper";
+import api from "../services/api";
 
 export default function OrderSummaryScreen({ navigation, route }) {
   const initial = (route && route.params && route.params.cart) || [];
@@ -40,6 +42,46 @@ export default function OrderSummaryScreen({ navigation, route }) {
 
   const [showModal, setShowModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmitOrder = async () => {
+    if (!selectedPayment) {
+      Alert.alert("Atención", "Selecciona un método de pago");
+      return;
+    }
+    if (!pedido.length) {
+      Alert.alert("Atención", "No hay productos en el pedido");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const itemsPayload = pedido.map((it) => ({
+        id: it.id,
+        cantidad: it.qty || it.cantidad || 1,
+        precio: it.price || 0,
+      }));
+      const total = itemsPayload.reduce(
+        (s, it) => s + it.precio * it.cantidad,
+        0
+      );
+      const res = await api.post("/pedidos", {
+        items: itemsPayload,
+        total,
+        metodo_pago: selectedPayment,
+      });
+      console.log("Pedido creado:", res.data);
+      setShowModal(false);
+      navigation.navigate("Menu", { orderSuccess: true });
+    } catch (err) {
+      console.error("Error creando pedido:", err.response?.data || err.message);
+      Alert.alert(
+        "Error",
+        err.response?.data?.message || "No se pudo crear el pedido"
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const renderRow = ({ item }) => (
     <View style={styles.row}>
@@ -202,15 +244,16 @@ export default function OrderSummaryScreen({ navigation, route }) {
               <Button
                 mode="contained"
                 buttonColor="#000"
-                onPress={() => {
-                  // close modal and navigate back to Menu with success flag
-                  setShowModal(false);
-                  navigation.navigate("Menu", { orderSuccess: true });
-                }}
+                onPress={handleSubmitOrder}
+                disabled={submitting}
                 contentStyle={{ height: 44 }}
                 style={{ borderRadius: 20 }}
               >
-                Pagar S/{grandTotal.toFixed(2)}
+                {submitting ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  `Pagar S/${grandTotal.toFixed(2)}`
+                )}
               </Button>
             </View>
           </View>
