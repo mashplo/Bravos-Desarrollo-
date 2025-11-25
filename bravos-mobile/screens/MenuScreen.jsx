@@ -117,6 +117,14 @@ export default function MenuScreen({ navigation, route }) {
     setProductos(productosDemo);
   }, []);
 
+  useEffect(() => {
+    // Limpiar carrito cuando se confirme desde OrderSummary
+    if (route?.params?.clearCart) {
+      setCart([]);
+      setOrderSuccessVisible(false);
+    }
+  }, [route?.params?.clearCart]);
+
   const screenHeight = Dimensions.get("window").height;
   const headerHeight = Math.round(screenHeight * 0.32);
 

@@ -133,7 +133,7 @@ export default function Pendings() {
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex flex-col">
                           <span className="text-sm text-gray-500">Pedido #{pedido.id}</span>
-                          <span className="text-xs text-gray-400">Pago: {pedido.metodo_pago}</span>
+                          <span className="text-base font-bold text-primary mt-1">💳 {pedido.metodo_pago}</span>
                         </div>
                         <span className={`badge ${pedido.estado === 'enviado' ? 'badge-info' : 'badge-warning'}`}>
                           {pedido.estado === 'enviado' ? 'Enviado' : 'En preparación'}
@@ -195,7 +195,7 @@ export default function Pendings() {
                         <div className="flex justify-between items-center mb-2">
                           <div className="flex flex-col">
                             <span className="text-sm text-gray-500">Pedido #{pedido.id}</span>
-                            <span className="text-xs text-gray-400">Pago: {pedido.metodo_pago}</span>
+                            <span className="text-base font-bold text-success mt-1">💳 {pedido.metodo_pago}</span>
                           </div>
                           <span className="badge badge-success">Entregado</span>
                         </div>
