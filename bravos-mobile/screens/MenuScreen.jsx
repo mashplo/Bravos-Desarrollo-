@@ -12,7 +12,8 @@ import {
 } from "react-native";
 import { Text, Card, Button } from "react-native-paper";
 
-const HEADER_IMAGE = require("../assets/Hamburguesa-Texana-1200x709.avif");
+// Header principal: reemplazado con la imagen solicitada
+const HEADER_IMAGE = require("../assets/ChatGPT Image 10 nov 2025, 10_21_18.png");
 
 const productosDemo = [
   // Hamburguesas
@@ -41,7 +42,7 @@ const productosDemo = [
     id: 4,
     name: "Bravos Signature",
     price: 32.0,
-    image: require("../assets/N5EPKUWMIVH4RCPNDM7OP5OKQQ.jpeg"),
+    image: require("../assets/Hamburguesa-Texana-1200x709.avif"), // actualizado según solicitud
     category: "hamburguesas",
   },
   // Burger faltante restaurada
@@ -49,7 +50,7 @@ const productosDemo = [
     id: 5,
     name: "Hamburguesa Doble Queso",
     price: 34.0,
-    image: require("../assets/burger.png"),
+    image: require("../assets/N5EPKUWMIVH4RCPNDM7OP5OKQQ.jpeg"), // Bravos Signature image
     category: "hamburguesas",
   },
   // Bebidas

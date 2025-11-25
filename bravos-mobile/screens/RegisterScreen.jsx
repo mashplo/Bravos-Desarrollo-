@@ -1,16 +1,23 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Alert, Image } from "react-native";
-import { Text, Button, TextInput } from "react-native-paper";
+import { Text, Button, TextInput, ActivityIndicator } from "react-native-paper";
 const LOGO = require("../assets/logo.png");
 import api from "../services/api";
 
 export default function RegisterScreen({ navigation }) {
   const [nombre, setNombre] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = async () => {  
+  const handleRegister = async () => {
+    if (!nombre || !username || !email || !password) {
+      Alert.alert("Error", "Por favor completa todos los campos");
+      return;
+    }
+    
     if (!email || !email.includes("@")) {
       Alert.alert("Error", "Por favor ingresa un correo válido");
       return;
@@ -20,20 +27,40 @@ export default function RegisterScreen({ navigation }) {
       Alert.alert("Error", "Las contraseñas no coinciden");
       return;
     }
+
+    if (password.length < 6) {
+      Alert.alert("Error", "La contraseña debe tener al menos 6 caracteres");
+      return;
+    }
+
+    setLoading(true);
     try {
+      console.log("Registrando usuario:", { nombre, username, email });
       const res = await api.post('/auth/register', {
         nombre,
+        username,
         email,
         password,
       });
+      console.log("Respuesta registro:", res.data);
+      
       if (res.data && res.data.success) {
-        Alert.alert("Registro exitoso", "Ya puedes iniciar sesión");
-        navigation.navigate("Login");
+        Alert.alert("¡Registro exitoso!", "Ya puedes iniciar sesión con tu cuenta", [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Login")
+          }
+        ]);
       } else {
         Alert.alert("Error", res.data?.message || "No se pudo registrar");
       }
     } catch (err) {
-      Alert.alert("Error", "No se pudo registrar");
+      console.error("Error en registro:", err);
+      console.error("Detalles:", err.response?.data);
+      const errorMsg = err.response?.data?.message || "No se pudo registrar. Intenta nuevamente.";
+      Alert.alert("Error", errorMsg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,6 +80,14 @@ export default function RegisterScreen({ navigation }) {
             onChangeText={setNombre}
             mode="flat"
             style={styles.input}
+          />
+          <TextInput
+            label="Nombre de usuario"
+            value={username}
+            onChangeText={setUsername}
+            mode="flat"
+            style={styles.input}
+            autoCapitalize="none"
           />
           <TextInput
             label="Correo"
@@ -86,8 +121,9 @@ export default function RegisterScreen({ navigation }) {
             buttonColor="#7a4f1d"
             contentStyle={styles.buttonContent}
             style={styles.button}
+            disabled={loading}
           >
-            Registrarse
+            {loading ? <ActivityIndicator color="#fff" /> : "Registrarse"}
           </Button>
           <Button
             mode="outlined"

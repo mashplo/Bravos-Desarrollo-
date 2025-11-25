@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Alert, Image } from "react-native";
-import { Text, Button, TextInput, Card } from "react-native-paper";
+import { Text, Button, TextInput, Card, ActivityIndicator } from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../services/api";
-import { saveToken } from "../store/user";
 
 const LOGO = require("../assets/logo.png");
 const PROMO_IMAGE = require("../assets/ChatGPT Image 10 nov 2025, 10_13_54.png");
@@ -10,11 +10,50 @@ const PROMO_IMAGE = require("../assets/ChatGPT Image 10 nov 2025, 10_13_54.png")
 export default function LoginScreenNew({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    // Desarrollo: bypass temporal del backend — navegar directamente a Menu
-    // Cuando el backend esté listo, restaurar la lógica de login con API.
-    navigation.navigate("Menu", { initialCategory: "hamburguesas" });
+    if (!email || !password) {
+      Alert.alert("Error", "Por favor completa todos los campos");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      Alert.alert("Error", "Por favor ingresa un correo válido");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      console.log("Intentando login con:", { email });
+      const res = await api.post("/auth/login", { email, password });
+      console.log("Respuesta del servidor:", res.data);
+
+      if (res.data && res.data.success && res.data.token) {
+        // Guardar token en AsyncStorage
+        await AsyncStorage.setItem("jwt", res.data.token);
+        
+        // Guardar datos del usuario
+        await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
+        
+        console.log("Login exitoso, token guardado");
+        Alert.alert("Bienvenido", `Hola ${res.data.user.nombre}`, [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("Menu", { initialCategory: "hamburguesas" })
+          }
+        ]);
+      } else {
+        Alert.alert("Error", res.data?.message || "Credenciales incorrectas");
+      }
+    } catch (err) {
+      console.error("Error en login:", err);
+      console.error("Detalles:", err.response?.data);
+      const errorMsg = err.response?.data?.message || "No se pudo conectar con el servidor";
+      Alert.alert("Error", errorMsg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -54,8 +93,9 @@ export default function LoginScreenNew({ navigation }) {
           labelStyle={styles.buttonLabel}
           contentStyle={styles.loginButtonContent}
           style={styles.loginButton}
+          disabled={loading}
         >
-          Log In
+          {loading ? <ActivityIndicator color="#fff" /> : "Log In"}
         </Button>
 
         <Button
