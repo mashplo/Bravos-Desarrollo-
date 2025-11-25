@@ -1,14 +1,10 @@
+
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { PaperProvider, DefaultTheme } from "react-native-paper";
 import { Text, Image, View, StyleSheet } from "react-native";
 
-// Keep default text props safe if not set elsewhere
-Text.defaultProps = Text.defaultProps || {};
-Text.defaultProps.style = {
-  ...(Text.defaultProps.style || {}),
-};
 import WelcomeScreen from "./screens/WelcomeScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import LoginScreen from "./screens/LoginScreenNew";
@@ -29,16 +25,16 @@ function HeaderBrand() {
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
-  const theme = {
-    ...DefaultTheme,
-    colors: {
-      ...DefaultTheme.colors,
-      primary: "#7a4f1d",
-      secondary: "#7a4f1d",
-    },
-  };
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: "#7a4f1d",
+    secondary: "#7a4f1d",
+  },
+};
 
+export default function App() {
   return (
     <PaperProvider theme={theme}>
       <NavigationContainer>
@@ -50,11 +46,7 @@ export default function App() {
           />
           <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen
-            name="Menu"
-            component={MenuScreen}
-            options={{ headerTitle: (props) => <HeaderBrand {...props} />, headerTitleAlign: "left" }}
-          />
+          <Stack.Screen name="Menu" component={MenuScreen} />
           <Stack.Screen name="OrderSummary" component={OrderSummaryScreen} />
           <Stack.Screen name="Reviews" component={ReviewsScreen} />
         </Stack.Navigator>

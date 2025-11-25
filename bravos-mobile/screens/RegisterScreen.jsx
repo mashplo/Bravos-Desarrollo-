@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Alert, Image } from "react-native";
 import { Text, Button, TextInput } from "react-native-paper";
-
 const LOGO = require("../assets/logo.png");
 import api from "../services/api";
 
@@ -11,7 +10,7 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleRegister = async () => {
+  const handleRegister = async () => {  
     if (!email || !email.includes("@")) {
       Alert.alert("Error", "Por favor ingresa un correo válido");
       return;
@@ -22,7 +21,7 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
     try {
-      const res = await api.post("/auth/register", {
+      const res = await api.post('/auth/register', {
         nombre,
         email,
         password,
@@ -134,4 +133,3 @@ const styles = StyleSheet.create({
   button: { borderRadius: 40, marginTop: 6 },
   buttonContent: { height: 52 },
 });
- 

@@ -95,7 +95,7 @@ export default function OrderSummaryScreen({ navigation, route }) {
       />
 
       <View style={styles.summaryBox}>
-        <View style={[styles.summaryRow, { borderTopWidth: 0 }]}> 
+        <View style={[styles.summaryRow, { borderTopWidth: 0 }]}>
           <Text style={styles.summaryLabel}>Total</Text>
           <Text style={styles.summaryValue}>S/{grandTotal.toFixed(2)}</Text>
         </View>
@@ -332,5 +332,3 @@ const styles = StyleSheet.create({
   },
   payCardSelected: { backgroundColor: "#7a4f1b", color: "#fff" },
 });
-
-

@@ -1,4 +1,4 @@
 import LoginScreenNew from "./LoginScreenNew";
 
-// Legacy file replaced: re-export the new LoginScreen implementation
+// Archivo legacy: solo reexporta la nueva implementación
 export default LoginScreenNew;
