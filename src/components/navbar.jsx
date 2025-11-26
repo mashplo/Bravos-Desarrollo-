@@ -65,7 +65,7 @@ export default function Navbar() {
               Hola, {usuario_actual.nombre}
             </span>
             
-              href="/profile"
+            <a  href="/profile"
               className="p-2 rounded-full hover:bg-gray-200 transition-colors"
               title="Mi Perfil"
             >
