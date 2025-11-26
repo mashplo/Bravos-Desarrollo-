@@ -1,5 +1,4 @@
-import { User, LogOut } from "lucide-react";
-
+import { User, LogOut, UserCircle } from "lucide-react";
 import Sidebar from "./menu/sidebar";
 import RdfButton from "./rdfButton";
 import { useState, useEffect } from "react";
@@ -65,6 +64,13 @@ export default function Navbar() {
             <span className="text-sm font-medium">
               Hola, {usuario_actual.nombre}
             </span>
+            
+              href="/profile"
+              className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+              title="Mi Perfil"
+            >
+              <UserCircle size={25} className="text-gray-800" />
+            </a>
             <button
               onClick={handleCerrarSesion}
               className="btn btn-sm btn-ghost gap-2"

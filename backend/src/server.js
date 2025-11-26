@@ -9,7 +9,8 @@ import { fileURLToPath } from "url";
 import authRoutes from "./routes/auth.routes.js";
 import pedidosRoutes from "./routes/pedido.routes.js";
 import resenaRoutes from "./routes/resena.routes.js";
-
+//para perfil
+import profileRoutes from "./routes/profile.routes.js";
 // No cargamos dotenv aquí: las variables de entorno las gestiona Railway/entorno de despliegue
 
 // Para obtener __dirname en ES modules
@@ -21,6 +22,8 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
+//para perfil
+app.use("/api", profileRoutes);
 //apis de identificacion
 app.use("/api/auth", authRoutes);
 app.use("/api/pedidos", pedidosRoutes);

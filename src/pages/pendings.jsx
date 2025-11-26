@@ -1,5 +1,4 @@
-
-import { Hamburger } from "lucide-react"
+import { Hamburger, UserCircle } from "lucide-react"
 import { useState, useEffect } from "react"
 import { get_pedidos, actualizar_estado_pedido } from "../herramientas/usuario"
 
@@ -108,7 +107,14 @@ export default function Pendings() {
     <main className="flex flex-col min-h-screen bg-base-200">
       <nav className="flex flex-row justify-between items-center p-4 bg-white shadow-md">
         <div className="text-2xl font-bold">Bravos</div>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
+          
+            href="/profile"
+            className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+            title="Mi Perfil"
+          >
+            <UserCircle size={25} className="text-gray-800" />
+          </a>
           <button className="btn btn-warning btn-sm" onClick={reiniciar_contador}>
             Reiniciar Contador
           </button>
