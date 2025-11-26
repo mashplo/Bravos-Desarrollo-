@@ -109,7 +109,7 @@ export default function Pendings() {
         <div className="text-2xl font-bold">Bravos</div>
         <div className="flex items-center gap-3">
           
-            href="/profile"
+         <a  href="/profile"
             className="p-2 rounded-full hover:bg-gray-200 transition-colors"
             title="Mi Perfil"
           >
