@@ -19,6 +19,12 @@ async function handleResponse(res) {
   } catch {
     return { success: false, message: "Respuesta inválida del servidor" };
   }
+  
+  // Manejar caso especial de conflicto de sesión (409)
+  if (res.status === 409 && data.requireConfirmation) {
+    return data;
+  }
+  
   if (!res.ok) {
     return { success: false, message: data?.message || "Error del servidor", ...data };
   }
@@ -116,5 +122,47 @@ export async function cerrar_sesion_backend() {
   } catch (err) {
     console.error("Error cerrar_sesion_backend:", err);
     return { success: false, message: "Error de conexión al servidor" };
+  }
+}
+
+// Función para verificar si la sesión sigue activa
+export function handleSessionExpired(response) {
+  if (response.sessionExpired) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario_actual");
+    // Redirigir al login con mensaje
+    window.location.href = "/login?sessionExpired=true";
+    return true;
+  }
+  return false;
+}
+
+// Helper para hacer requests autenticados
+export async function authenticatedFetch(url, options = {}) {
+  const token = localStorage.getItem("token");
+  
+  const headers = {
+    "Content-Type": "application/json",
+    ...options.headers,
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  try {
+    const res = await fetch(url, { ...options, headers });
+    const data = await res.json();
+    
+    // Si la sesión expiró, manejar el redirect
+    if (res.status === 401 && data.sessionExpired) {
+      handleSessionExpired(data);
+      return { success: false, sessionExpired: true };
+    }
+    
+    return data;
+  } catch (err) {
+    console.error("Error en authenticatedFetch:", err);
+    return { success: false, message: "Error de conexión" };
   }
 }

@@ -21,6 +21,13 @@ const api = axios.create({
   timeout: 10000,
 });
 
+// Variable para almacenar callback de sesión expirada
+let onSessionExpired = null;
+
+export function setOnSessionExpired(callback) {
+  onSessionExpired = callback;
+}
+
 api.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem("jwt").catch(() => null);
   if (token) {
@@ -42,6 +49,28 @@ api.interceptors.request.use(async (config) => {
 
   return config;
 });
+
+// Interceptor de respuesta para manejar errores
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    // Si es un error 409 con requireConfirmation, resolverlo como éxito para manejarlo en el componente
+    if (error.response?.status === 409 && error.response?.data?.requireConfirmation) {
+      return Promise.resolve(error.response);
+    }
+    
+    // Si la sesión expiró (401 con sessionExpired), limpiar storage y notificar
+    if (error.response?.status === 401 && error.response?.data?.sessionExpired) {
+      await AsyncStorage.removeItem("jwt");
+      await AsyncStorage.removeItem("user");
+      if (onSessionExpired) {
+        onSessionExpired();
+      }
+    }
+    
+    return Promise.reject(error);
+  }
+);
 
 export default api;
 export { getDeviceId };

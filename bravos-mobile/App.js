@@ -1,9 +1,10 @@
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { PaperProvider, DefaultTheme } from "react-native-paper";
-import { Text, Image, View, StyleSheet } from "react-native";
+import { Text, Image, View, StyleSheet, Alert } from "react-native";
+import { setOnSessionExpired } from "./services/api";
 
 import WelcomeScreen from "./screens/WelcomeScreen";
 import RegisterScreen from "./screens/RegisterScreen";
@@ -37,9 +38,34 @@ const theme = {
 };
 
 export default function App() {
+  const navigationRef = useRef(null);
+
+  useEffect(() => {
+    // Configurar callback para cuando la sesión expire
+    setOnSessionExpired(() => {
+      Alert.alert(
+        "Sesión cerrada",
+        "Tu sesión fue cerrada porque iniciaste sesión en otro dispositivo.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              if (navigationRef.current) {
+                navigationRef.current.reset({
+                  index: 0,
+                  routes: [{ name: "Login" }],
+                });
+              }
+            },
+          },
+        ]
+      );
+    });
+  }, []);
+
   return (
     <PaperProvider theme={theme}>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator initialRouteName="Welcome">
           <Stack.Screen
             name="Welcome"

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { iniciar_sesion, iniciar_sesion_forzado } from "../herramientas/usuario_login";
 import { toast, Toaster } from "sonner";
@@ -13,6 +13,14 @@ export default function Login() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const next = params.get("next");
+  const sessionExpired = params.get("sessionExpired");
+
+  // Mostrar mensaje si la sesión expiró
+  useEffect(() => {
+    if (sessionExpired === "true") {
+      toast.warning("Tu sesión fue cerrada porque iniciaste sesión en otro dispositivo.");
+    }
+  }, [sessionExpired]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
