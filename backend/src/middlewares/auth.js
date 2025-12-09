@@ -10,20 +10,21 @@ export async function verifyToken(req, res, next) {
 
   try {
     const data = jwt.verify(token, process.env.JWT_SECRET);
-    
+
     // Verificar que la sesión esté activa en la base de datos
     const session = await Session.findOne({
       where: {
         user_id: data.id,
         token: token,
-        is_active: true
-      }
+        is_active: true,
+      },
     });
 
     if (!session) {
-      return res.status(401).json({ 
-        message: "Sesión expirada o cerrada. Por favor inicia sesión nuevamente.",
-        sessionExpired: true
+      return res.status(401).json({
+        message:
+          "Sesión expirada o cerrada. Por favor inicia sesión nuevamente.",
+        sessionExpired: true,
       });
     }
 
@@ -36,6 +37,19 @@ export async function verifyToken(req, res, next) {
   } catch (error) {
     return res.status(403).json({ message: "Token inválido" });
   }
+}
+
+/**
+ * Middleware para verificar que el usuario sea administrador
+ */
+export function requireAdmin(req, res, next) {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({
+      success: false,
+      message: "Acceso denegado. Se requieren permisos de administrador.",
+    });
+  }
+  next();
 }
 
 // Alias para compatibilidad

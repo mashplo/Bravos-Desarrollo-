@@ -190,87 +190,9 @@ export async function actualizar_estado_pedido({ id, nuevo_estado }) {
   return pedidos;
 }
 
-// Funciones de autenticación
-export async function registrar_usuario({
-  nombre,
-  email,
-  password,
-  direccion,
-}) {
-  const usuarios = localStorage.getItem("usuarios")
-    ? JSON.parse(localStorage.getItem("usuarios"))
-    : [];
-
-  // Verificar si el email ya existe
-  const usuario_existente = usuarios.find((u) => u.email === email);
-  if (usuario_existente) {
-    return { success: false, message: "El email ya está registrado" };
-  }
-
-  const nuevo_usuario = {
-    id: Date.now(),
-    nombre: nombre,
-    email: email,
-    password: password, // En producción esto debería estar hasheado
-    direccion: direccion,
-    fecha_registro: new Date().toISOString(),
-  };
-
-  usuarios.push(nuevo_usuario);
-  localStorage.setItem("usuarios", JSON.stringify(usuarios));
-
-  return {
-    success: true,
-    message: "Usuario registrado exitosamente",
-    usuario: nuevo_usuario,
-  };
-}
-
-export async function iniciar_sesion({ email, password }) {
-  const usuarios = localStorage.getItem("usuarios")
-    ? JSON.parse(localStorage.getItem("usuarios"))
-    : [];
-
-  console.log("Usuarios en localStorage:", usuarios);
-  console.log("Intentando login con:", { email, password });
-
-  // Verificar si es el administrador
-  const es_admin = email === "esaul@gmail.com" && password === "contra123";
-
-  let usuario = null;
-
-  if (es_admin) {
-    // Crear usuario admin si no existe en la lista
-    usuario = {
-      id: 0,
-      nombre: "Administrador",
-      email: "esaul@gmail.com",
-      password: "contra123",
-      es_admin: true,
-    };
-  } else {
-    // Buscar en usuarios registrados
-    usuario = usuarios.find(
-      (u) => u.email === email && u.password === password
-    );
-  }
-
-  console.log("Usuario encontrado:", usuario);
-
-  if (!usuario) {
-    return { success: false, message: "Email o contraseña incorrectos" };
-  }
-
-  // Guardar sesión actual
-  localStorage.setItem("usuario_actual", JSON.stringify(usuario));
-
-  return {
-    success: true,
-    message: "Sesión iniciada exitosamente",
-    usuario: usuario,
-    es_admin: es_admin,
-  };
-}
+// =====================================================
+// FUNCIONES DE SESIÓN
+// =====================================================
 
 export async function cerrar_sesion() {
   // Llamar al backend para cerrar sesión
@@ -283,15 +205,15 @@ export async function cerrar_sesion() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ deviceId })
+        body: JSON.stringify({ deviceId }),
       });
     }
   } catch (error) {
     console.error("Error cerrando sesión en backend:", error);
   }
-  
+
   localStorage.removeItem("usuario_actual");
   localStorage.removeItem("token");
   return { success: true, message: "Sesión cerrada" };
@@ -302,7 +224,9 @@ export async function obtener_usuario_actual() {
   return usuario ? JSON.parse(usuario) : null;
 }
 
-// Funciones de reseñas
+// =====================================================
+// FUNCIONES DE RESEÑAS
+// =====================================================
 export async function crear_resena({ comentario, calificacion }) {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -356,23 +280,34 @@ export async function get_resenas() {
   }
 }
 
+/**
+ * Valida que los items del carrito tengan IDs válidos
+ * Usa la API de productos para validar
+ */
 export async function validate_carrito_items() {
   const carrito = localStorage.getItem("carrito")
     ? JSON.parse(localStorage.getItem("carrito"))
     : [];
 
-  const validItems = carrito.map((item) => {
-    const catalog = [
-      { id: 0, name: "Smash Burguer" },
-      { id: 1, name: "Bacon Burguer" },
-      { id: 6, name: "Coca cola" },
-      { id: 7, name: "Inka cola" },
-    ];
+  // Obtener productos válidos desde la API
+  try {
+    const backend = import.meta.env.VITE_API_URL;
+    const resp = await fetch(`${backend}/api/productos`);
+    if (resp.ok) {
+      const data = await resp.json();
+      const productIds = data.productos?.map((p) => p.id) || [];
 
-    const found = catalog.find((p) => p.id === item.id);
-    return found ? item : null;
-  }).filter(Boolean);
+      const validItems = carrito.filter((item) =>
+        productIds.includes(Number(item.id))
+      );
 
-  localStorage.setItem("carrito", JSON.stringify(validItems));
-  return validItems;
+      localStorage.setItem("carrito", JSON.stringify(validItems));
+      return validItems;
+    }
+  } catch (error) {
+    console.error("Error validando carrito:", error);
+  }
+
+  // Fallback: devolver carrito sin validar
+  return carrito;
 }

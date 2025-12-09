@@ -2,38 +2,60 @@ import { User } from "../models/user.model.js";
 import { Session } from "../models/session.model.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import bcrypt from "bcrypt";
 
-//REGISTER
+const SALT_ROUNDS = 12;
+
+/**
+ * Función helper para comparar contraseñas
+ * Soporta tanto contraseñas hasheadas (nuevas) como texto plano (migración)
+ */
+async function comparePassword(inputPassword, storedPassword) {
+  // Si la contraseña almacenada parece ser un hash de bcrypt
+  if (storedPassword.startsWith("$2")) {
+    return await bcrypt.compare(inputPassword, storedPassword);
+  }
+  // Fallback para contraseñas legacy en texto plano (migración)
+  return inputPassword === storedPassword;
+}
+
+/**
+ * REGISTER - Registrar nuevo usuario
+ */
 export const register = async (req, res) => {
   try {
     const { nombre, email, password, username, deviceId, deviceType } = req.body;
 
-    // Validar datos mínimos
+    // La validación principal se hace en el middleware validateRegister
+    // Esta es una validación de respaldo
     if (!nombre || !email || !password || !username) {
-      return res.status(400).json({ message: "Faltan datos" });
+      return res.status(400).json({ success: false, message: "Faltan datos requeridos" });
     }
 
-    // Validar email
+    // Validar email único
     const exists = await User.findOne({ where: { correo: email } });
     if (exists) {
-      return res.status(400).json({ message: "El correo ya existe" });
+      return res.status(400).json({ success: false, message: "El correo ya existe" });
     }
 
-    // Validar username
+    // Validar username único
     const existsUser = await User.findOne({ where: { usuario: username } });
     if (existsUser) {
-      return res.status(400).json({ message: "El username ya existe" });
+      return res.status(400).json({ success: false, message: "El username ya existe" });
     }
 
-    // Crear usuario con los nombres correctos del modelo
+    // Hash de contraseña con bcrypt
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Crear usuario
     const user = await User.create({
       nombre_apellido: nombre,
       correo: email,
       usuario: username,
-      password
+      password: hashedPassword,
     });
 
-    // Generar token
+    // Generar token JWT
     const token = jwt.sign(
       { id: user.id, role: user.role },
       process.env.JWT_SECRET,
@@ -55,49 +77,51 @@ export const register = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Usuario registrado",
+      message: "Usuario registrado exitosamente",
       token,
       user: {
         id: user.id,
         nombre: user.nombre_apellido,
         email: user.correo,
         username: user.usuario,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
-
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error interno" });
+    console.error("Error en registro:", error);
+    return res.status(500).json({ success: false, message: "Error interno del servidor" });
   }
 };
 
 
-// --- LOGIN ---
+/**
+ * LOGIN - Iniciar sesión
+ */
 export const login = async (req, res) => {
   try {
     const { email, password, deviceId, deviceType } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Faltan datos" });
+      return res.status(400).json({ success: false, message: "Email y contraseña son requeridos" });
     }
 
-    // Buscar usuario por CORREO
+    // Buscar usuario por email
     const user = await User.findOne({ where: { correo: email } });
 
     if (!user) {
-      return res.status(400).json({ message: "Usuario no encontrado" });
+      return res.status(400).json({ success: false, message: "Credenciales incorrectas" });
     }
 
-    // Comparar contraseña
-    if (user.password !== password) {
-      return res.status(400).json({ message: "Contraseña incorrecta" });
+    // Comparar contraseña (soporta hash y legacy)
+    const isValidPassword = await comparePassword(password, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ success: false, message: "Credenciales incorrectas" });
     }
 
     const finalDeviceId = deviceId || crypto.randomUUID();
     const finalDeviceType = deviceType || "web";
 
-    // Verificar si hay sesiones activas
+    // Verificar si hay sesiones activas en otros dispositivos
     const activeSessions = await Session.findAll({
       where: {
         user_id: user.id,
@@ -105,7 +129,6 @@ export const login = async (req, res) => {
       },
     });
 
-    // Si hay sesiones activas en otros dispositivos
     if (activeSessions.length > 0) {
       const currentDeviceSession = activeSessions.find(
         (s) => s.device_id === finalDeviceId
@@ -117,10 +140,10 @@ export const login = async (req, res) => {
           success: false,
           requireConfirmation: true,
           message: "Tu cuenta está activa en otro dispositivo. ¿Deseas continuar aquí y cerrar la otra sesión?",
-          activeSessions: activeSessions.map(s => ({
+          activeSessions: activeSessions.map((s) => ({
             deviceType: s.device_type,
-            lastActivity: s.last_activity
-          }))
+            lastActivity: s.last_activity,
+          })),
         });
       }
     }
@@ -132,11 +155,8 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // Desactivar todas las sesiones anteriores
-    await Session.update(
-      { is_active: false },
-      { where: { user_id: user.id } }
-    );
+    // Desactivar sesiones anteriores
+    await Session.update({ is_active: false }, { where: { user_id: user.id } });
 
     // Crear nueva sesión
     await Session.create({
@@ -157,40 +177,42 @@ export const login = async (req, res) => {
         nombre: user.nombre_apellido,
         email: user.correo,
         username: user.usuario,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
-
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error interno" });
+    console.error("Error en login:", error);
+    return res.status(500).json({ success: false, message: "Error interno del servidor" });
   }
 };
 
 
-// --- LOGIN CON CONFIRMACIÓN (FORZAR CIERRE DE OTRAS SESIONES) ---
+/**
+ * LOGIN WITH FORCE - Forzar login cerrando otras sesiones
+ */
 export const loginWithForce = async (req, res) => {
   try {
     const { email, password, deviceId, deviceType, forceLogin } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Faltan datos" });
+      return res.status(400).json({ success: false, message: "Email y contraseña son requeridos" });
     }
 
     if (!forceLogin) {
-      return res.status(400).json({ message: "Se requiere confirmación" });
+      return res.status(400).json({ success: false, message: "Se requiere confirmación" });
     }
 
     // Buscar usuario
     const user = await User.findOne({ where: { correo: email } });
 
     if (!user) {
-      return res.status(400).json({ message: "Usuario no encontrado" });
+      return res.status(400).json({ success: false, message: "Credenciales incorrectas" });
     }
 
     // Comparar contraseña
-    if (user.password !== password) {
-      return res.status(400).json({ message: "Contraseña incorrecta" });
+    const isValidPassword = await comparePassword(password, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ success: false, message: "Credenciales incorrectas" });
     }
 
     const finalDeviceId = deviceId || crypto.randomUUID();
@@ -204,10 +226,7 @@ export const loginWithForce = async (req, res) => {
     );
 
     // Desactivar TODAS las sesiones anteriores
-    await Session.update(
-      { is_active: false },
-      { where: { user_id: user.id } }
-    );
+    await Session.update({ is_active: false }, { where: { user_id: user.id } });
 
     // Crear nueva sesión
     await Session.create({
@@ -228,18 +247,19 @@ export const loginWithForce = async (req, res) => {
         nombre: user.nombre_apellido,
         email: user.correo,
         username: user.usuario,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
-
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error interno" });
+    console.error("Error en force login:", error);
+    return res.status(500).json({ success: false, message: "Error interno del servidor" });
   }
 };
 
 
-// --- LOGOUT ---
+/**
+ * LOGOUT - Cerrar sesión
+ */
 export const logout = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -258,10 +278,7 @@ export const logout = async (req, res) => {
       );
     } else {
       // Cerrar todas las sesiones del usuario
-      await Session.update(
-        { is_active: false },
-        { where: { user_id: userId } }
-      );
+      await Session.update({ is_active: false }, { where: { user_id: userId } });
     }
 
     return res.json({
@@ -269,7 +286,7 @@ export const logout = async (req, res) => {
       message: "Sesión cerrada exitosamente",
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Error al cerrar sesión" });
+    console.error("Error en logout:", error);
+    return res.status(500).json({ success: false, message: "Error al cerrar sesión" });
   }
 };
