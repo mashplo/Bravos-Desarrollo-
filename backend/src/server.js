@@ -5,6 +5,12 @@ import { readFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
+// Verificar variables de entorno críticas al inicio
+if (!process.env.JWT_SECRET) {
+  console.warn("⚠️ ADVERTENCIA: JWT_SECRET no está configurado. Usando valor por defecto (NO USAR EN PRODUCCIÓN)");
+  process.env.JWT_SECRET = "default_secret_change_in_production_" + Date.now();
+}
+
 //paralogin y register
 import authRoutes from "./routes/auth.routes.js";
 import pedidosRoutes from "./routes/pedido.routes.js";
@@ -29,9 +35,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/pedidos", pedidosRoutes);
 app.use("/api/resenas", resenaRoutes);
 
-// Sincronizar modelos (solo al inicio)
+// Sincronizar modelos (solo al inicio) con manejo de errores
 sequelize.sync().then(() => {
-  console.log("DB lista");
+  console.log("✅ DB lista");
+}).catch((error) => {
+  console.error("❌ Error sincronizando DB:", error.message);
 });
 
 // Ruta de prueba
