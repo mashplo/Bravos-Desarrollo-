@@ -74,3 +74,17 @@ api.interceptors.response.use(
 
 export default api;
 export { getDeviceId };
+
+// Función para obtener productos del backend
+export async function getProductos() {
+  try {
+    const response = await api.get("/productos");
+    if (response.data?.success) {
+      return response.data.productos;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error obteniendo productos:", error);
+    return null;
+  }
+}

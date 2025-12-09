@@ -15,6 +15,7 @@ if (!process.env.JWT_SECRET) {
 import authRoutes from "./routes/auth.routes.js";
 import pedidosRoutes from "./routes/pedido.routes.js";
 import resenaRoutes from "./routes/resena.routes.js";
+import productosRoutes from "./routes/productos.routes.js";
 //para perfil
 import profileRoutes from "./routes/profile.routes.js";
 // No cargamos dotenv aquí: las variables de entorno las gestiona Railway/entorno de despliegue
@@ -34,6 +35,7 @@ app.use("/api", profileRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/pedidos", pedidosRoutes);
 app.use("/api/resenas", resenaRoutes);
+app.use("/api/productos", productosRoutes);
 
 // Sincronizar modelos (solo al inicio) con manejo de errores
 sequelize.sync().then(() => {
