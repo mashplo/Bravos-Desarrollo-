@@ -1,94 +1,96 @@
-import { useState, useEffect } from "react"
-import { Package, Clock, Truck, CheckCircle } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-import Navbar from "../components/navbar"
-import Footer from "../components/footer"
-import { useSessionCheck } from "../herramientas/useSessionCheck"
+import { useState, useEffect } from "react";
+import { Package, Clock, Truck, CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/navbar";
+import Footer from "../components/footer";
+import { useSessionCheck } from "../herramientas/useSessionCheck";
 
 export default function Historial() {
-  const [pedidos, setPedidos] = useState([])
-  const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
-  
+  const [pedidos, setPedidos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
   // Verificar sesión cada 10 segundos
-  useSessionCheck(10000)
+  useSessionCheck(10000);
 
   useEffect(() => {
-    cargarHistorial()
-  }, [])
+    cargarHistorial();
+  }, []);
 
   const cargarHistorial = async () => {
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       if (!token) {
-        navigate("/login")
-        return
+        navigate("/login");
+        return;
       }
 
-      const backend = import.meta.env.VITE_API_URL || "https://bravos-backend-production.up.railway.app"
+      const backend =
+        import.meta.env.VITE_API_URL ||
+        "https://bravos-backend-production.up.railway.app";
       const response = await fetch(`${backend}/api/pedidos/historial`, {
         headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      })
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      const data = await response.json()
-      
+      const data = await response.json();
+
       // Verificar si la sesión expiró
       if (response.status === 401 && data.sessionExpired) {
-        localStorage.removeItem("token")
-        localStorage.removeItem("usuario_actual")
-        navigate("/login?sessionExpired=true")
-        return
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario_actual");
+        navigate("/login?sessionExpired=true");
+        return;
       }
-      
+
       if (data.success) {
-        setPedidos(data.pedidos)
+        setPedidos(data.pedidos);
       }
     } catch (error) {
-      console.error("Error cargando historial:", error)
+      console.error("Error cargando historial:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getEstadoConfig = (estado) => {
     switch (estado) {
       case "en_preparacion":
-        return { 
-          icon: Clock, 
-          color: "text-warning", 
-          bgColor: "bg-warning/10", 
-          label: "En preparación" 
-        }
+        return {
+          icon: Clock,
+          color: "text-warning",
+          bgColor: "bg-warning/10",
+          label: "En preparación",
+        };
       case "enviado":
-        return { 
-          icon: Truck, 
-          color: "text-info", 
-          bgColor: "bg-info/10", 
-          label: "Enviado" 
-        }
+        return {
+          icon: Truck,
+          color: "text-info",
+          bgColor: "bg-info/10",
+          label: "Enviado",
+        };
       case "entregado":
-        return { 
-          icon: CheckCircle, 
-          color: "text-success", 
-          bgColor: "bg-success/10", 
-          label: "Entregado" 
-        }
+        return {
+          icon: CheckCircle,
+          color: "text-success",
+          bgColor: "bg-success/10",
+          label: "Entregado",
+        };
       default:
-        return { 
-          icon: Package, 
-          color: "text-gray-500", 
-          bgColor: "bg-gray-100", 
-          label: estado 
-        }
+        return {
+          icon: Package,
+          color: "text-gray-500",
+          bgColor: "bg-gray-100",
+          label: estado,
+        };
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
@@ -111,8 +113,8 @@ export default function Historial() {
           ) : (
             <div className="space-y-6">
               {pedidos.map((pedido) => {
-                const estadoConfig = getEstadoConfig(pedido.estado)
-                const IconoEstado = estadoConfig.icon
+                const estadoConfig = getEstadoConfig(pedido.estado);
+                const IconoEstado = estadoConfig.icon;
 
                 return (
                   <div key={pedido.id} className="card bg-base-100 shadow-xl">
@@ -120,20 +122,32 @@ export default function Historial() {
                       {/* Header del pedido */}
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h2 className="card-title text-2xl">Pedido #{pedido.id}</h2>
+                          <h2 className="card-title text-2xl">
+                            Pedido #{pedido.id}
+                          </h2>
                           <p className="text-sm text-gray-500">
-                            {new Date(pedido.fecha).toLocaleDateString('es-ES', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
+                            {new Date(pedido.fecha).toLocaleDateString(
+                              "es-ES",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
                           </p>
                         </div>
-                        <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${estadoConfig.bgColor}`}>
-                          <IconoEstado size={20} className={estadoConfig.color} />
-                          <span className={`font-semibold ${estadoConfig.color}`}>
+                        <div
+                          className={`flex items-center gap-2 px-4 py-2 rounded-full ${estadoConfig.bgColor}`}
+                        >
+                          <IconoEstado
+                            size={20}
+                            className={estadoConfig.color}
+                          />
+                          <span
+                            className={`font-semibold ${estadoConfig.color}`}
+                          >
                             {estadoConfig.label}
                           </span>
                         </div>
@@ -142,16 +156,23 @@ export default function Historial() {
                       {/* Items del pedido */}
                       <div className="space-y-3 mb-4">
                         {pedido.items.map((item, idx) => (
-                          <div key={idx} className="flex gap-4 p-3 bg-base-200 rounded-lg">
-                            <img 
-                              src={item.image_url || '/default-burger.png'} 
-                              alt={item.name} 
+                          <div
+                            key={idx}
+                            className="flex gap-4 p-3 bg-base-200 rounded-lg"
+                          >
+                            <img
+                              src={item.image_url || "/default-burger.png"}
+                              alt={item.name}
                               className="w-20 h-20 object-cover rounded-lg"
                             />
                             <div className="flex-1 flex justify-between items-center">
                               <div>
-                                <h3 className="font-semibold text-lg">{item.name}</h3>
-                                <p className="text-sm text-gray-600">Cantidad: {item.cantidad}</p>
+                                <h3 className="font-semibold text-lg">
+                                  {item.name}
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                  Cantidad: {item.cantidad}
+                                </p>
                               </div>
                               <span className="text-lg font-bold">
                                 S/{(item.price * item.cantidad).toFixed(2)}
@@ -165,7 +186,10 @@ export default function Historial() {
                       <div className="divider my-2"></div>
                       <div className="flex justify-between items-center">
                         <div className="text-sm text-gray-600">
-                          Método de pago: <span className="font-semibold">{pedido.metodo_pago}</span>
+                          Método de pago:{" "}
+                          <span className="font-semibold">
+                            {pedido.metodo_pago}
+                          </span>
                         </div>
                         <div className="text-2xl font-bold">
                           Total: S/{pedido.total.toFixed(2)}
@@ -173,7 +197,7 @@ export default function Historial() {
                       </div>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           )}
@@ -182,5 +206,5 @@ export default function Historial() {
 
       <Footer />
     </div>
-  )
+  );
 }

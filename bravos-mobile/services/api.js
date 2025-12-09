@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Device from 'expo-device';
+import * as Device from "expo-device";
 
 // Backend base URL
 const API_URL = "https://bravos-backend-production.up.railway.app/api";
@@ -10,7 +10,9 @@ async function getDeviceId() {
   let deviceId = await AsyncStorage.getItem("deviceId");
   if (!deviceId) {
     const deviceInfo = Device.modelName || Device.deviceName || "unknown";
-    deviceId = `mobile-${deviceInfo}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    deviceId = `mobile-${deviceInfo}-${Date.now()}-${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
     await AsyncStorage.setItem("deviceId", deviceId);
   }
   return deviceId;
@@ -36,13 +38,13 @@ api.interceptors.request.use(async (config) => {
   }
 
   // Agregar deviceId a todas las peticiones de auth
-  if (config.url?.includes('/auth/')) {
+  if (config.url?.includes("/auth/")) {
     const deviceId = await getDeviceId();
     if (config.data) {
       config.data = {
         ...config.data,
         deviceId,
-        deviceType: "mobile"
+        deviceType: "mobile",
       };
     }
   }
@@ -55,19 +57,25 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     // Si es un error 409 con requireConfirmation, resolverlo como éxito para manejarlo en el componente
-    if (error.response?.status === 409 && error.response?.data?.requireConfirmation) {
+    if (
+      error.response?.status === 409 &&
+      error.response?.data?.requireConfirmation
+    ) {
       return Promise.resolve(error.response);
     }
-    
+
     // Si la sesión expiró (401 con sessionExpired), limpiar storage y notificar
-    if (error.response?.status === 401 && error.response?.data?.sessionExpired) {
+    if (
+      error.response?.status === 401 &&
+      error.response?.data?.sessionExpired
+    ) {
       await AsyncStorage.removeItem("jwt");
       await AsyncStorage.removeItem("user");
       if (onSessionExpired) {
         onSessionExpired();
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

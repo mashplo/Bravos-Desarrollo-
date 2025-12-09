@@ -1,29 +1,40 @@
-import { useState, useEffect } from 'react';
-import { AlertCircle, CheckCircle, User, Mail, Lock, Edit2, Save, X, AtSign, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/navbar';
-import { obtener_perfil, actualizar_perfil } from '../herramientas/perfil';
-import { toast } from 'sonner';
-import { useSessionCheck } from '../herramientas/useSessionCheck';
+import { useState, useEffect } from "react";
+import {
+  AlertCircle,
+  CheckCircle,
+  User,
+  Mail,
+  Lock,
+  Edit2,
+  Save,
+  X,
+  AtSign,
+  ArrowLeft,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/navbar";
+import { obtener_perfil, actualizar_perfil } from "../herramientas/perfil";
+import { toast } from "sonner";
+import { useSessionCheck } from "../herramientas/useSessionCheck";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState({ type: '', text: '' });
+  const [message, setMessage] = useState({ type: "", text: "" });
   const navigate = useNavigate();
-  
+
   // Verificar sesión cada 10 segundos
   useSessionCheck(10000);
-  
+
   const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    username: '',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    nombre: "",
+    email: "",
+    username: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
@@ -34,7 +45,7 @@ export default function ProfilePage() {
     try {
       setLoading(true);
       const response = await obtener_perfil();
-      
+
       if (!response.success) {
         // Verificar si la sesión expiró
         if (response.sessionExpired) {
@@ -45,19 +56,22 @@ export default function ProfilePage() {
         }
         throw new Error(response.message);
       }
-      
+
       setUser(response.user);
       setFormData({
-        nombre: response.user.nombre || '',
-        email: response.user.email || '',
-        username: response.user.username || '',
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+        nombre: response.user.nombre || "",
+        email: response.user.email || "",
+        username: response.user.username || "",
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       });
     } catch (error) {
-      toast.error(error.message || 'Error al cargar el perfil');
-      setMessage({ type: 'error', text: error.message || 'Error al cargar el perfil' });
+      toast.error(error.message || "Error al cargar el perfil");
+      setMessage({
+        type: "error",
+        text: error.message || "Error al cargar el perfil",
+      });
     } finally {
       setLoading(false);
     }
@@ -65,50 +79,53 @@ export default function ProfilePage() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
-    setMessage({ type: '', text: '' });
+    setMessage({ type: "", text: "" });
 
     // Validation
     if (!formData.nombre || !formData.email || !formData.username) {
-      const errorMsg = 'Todos los campos son obligatorios';
-      setMessage({ type: 'error', text: errorMsg });
+      const errorMsg = "Todos los campos son obligatorios";
+      setMessage({ type: "error", text: errorMsg });
       toast.error(errorMsg);
       return;
     }
 
-    if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-      const errorMsg = 'Las contraseñas nuevas no coinciden';
-      setMessage({ type: 'error', text: errorMsg });
+    if (
+      formData.newPassword &&
+      formData.newPassword !== formData.confirmPassword
+    ) {
+      const errorMsg = "Las contraseñas nuevas no coinciden";
+      setMessage({ type: "error", text: errorMsg });
       toast.error(errorMsg);
       return;
     }
 
     if (formData.newPassword && formData.newPassword.length < 6) {
-      const errorMsg = 'La contraseña debe tener al menos 6 caracteres';
-      setMessage({ type: 'error', text: errorMsg });
+      const errorMsg = "La contraseña debe tener al menos 6 caracteres";
+      setMessage({ type: "error", text: errorMsg });
       toast.error(errorMsg);
       return;
     }
 
     if (formData.newPassword && !formData.currentPassword) {
-      const errorMsg = 'Debes ingresar tu contraseña actual para cambiarla';
-      setMessage({ type: 'error', text: errorMsg });
+      const errorMsg = "Debes ingresar tu contraseña actual para cambiarla";
+      setMessage({ type: "error", text: errorMsg });
       toast.error(errorMsg);
       return;
     }
 
     try {
       setSaving(true);
-      
+
       const response = await actualizar_perfil({
         nombre: formData.nombre,
         email: formData.email,
         username: formData.username,
         currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword
+        newPassword: formData.newPassword,
       });
 
       if (!response.success) {
@@ -116,22 +133,23 @@ export default function ProfilePage() {
       }
 
       setUser(response.user);
-      setFormData(prev => ({
+      setFormData((prev) => ({
         nombre: response.user.nombre,
         email: response.user.email,
         username: response.user.username,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       }));
-      
-      const successMsg = response.message || '¡Perfil actualizado exitosamente!';
-      setMessage({ type: 'success', text: successMsg });
+
+      const successMsg =
+        response.message || "¡Perfil actualizado exitosamente!";
+      setMessage({ type: "success", text: successMsg });
       toast.success(successMsg);
       setIsEditing(false);
     } catch (error) {
-      const errorMsg = error.message || 'Error al actualizar el perfil';
-      setMessage({ type: 'error', text: errorMsg });
+      const errorMsg = error.message || "Error al actualizar el perfil";
+      setMessage({ type: "error", text: errorMsg });
       toast.error(errorMsg);
     } finally {
       setSaving(false);
@@ -140,18 +158,18 @@ export default function ProfilePage() {
 
   const handleCancel = () => {
     setFormData({
-      nombre: user.nombre || '',
-      email: user.email || '',
-      username: user.username || '',
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
+      nombre: user.nombre || "",
+      email: user.email || "",
+      username: user.username || "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     });
     setIsEditing(false);
-    setMessage({ type: '', text: '' });
+    setMessage({ type: "", text: "" });
   };
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === "admin";
 
   if (loading) {
     return (
@@ -200,7 +218,9 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <h1 className="text-2xl font-bold">Mi Perfil</h1>
-                    <p className="text-orange-100">Administra tu información de cuenta</p>
+                    <p className="text-orange-100">
+                      Administra tu información de cuenta
+                    </p>
                   </div>
                 </div>
                 {!isEditing && (
@@ -217,10 +237,14 @@ export default function ProfilePage() {
 
             {/* Message */}
             {message.text && (
-              <div className={`mx-6 mt-6 p-4 rounded-lg flex items-start space-x-3 ${
-                message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-              }`}>
-                {message.type === 'success' ? (
+              <div
+                className={`mx-6 mt-6 p-4 rounded-lg flex items-start space-x-3 ${
+                  message.type === "success"
+                    ? "bg-green-50 text-green-800"
+                    : "bg-red-50 text-red-800"
+                }`}
+              >
+                {message.type === "success" ? (
                   <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                 ) : (
                   <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
@@ -235,7 +259,9 @@ export default function ProfilePage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nombre Completo
-                  <span className="text-xs text-gray-500 ml-2">(máx. 18 caracteres)</span>
+                  <span className="text-xs text-gray-500 ml-2">
+                    (máx. 18 caracteres)
+                  </span>
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
@@ -302,8 +328,12 @@ export default function ProfilePage() {
               {/* Password Change Section */}
               {isEditing && (
                 <div className="border-t pt-6 space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Cambiar Contraseña</h3>
-                  <p className="text-sm text-gray-600">Deja en blanco si no deseas cambiar tu contraseña</p>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Cambiar Contraseña
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    Deja en blanco si no deseas cambiar tu contraseña
+                  </p>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -367,7 +397,7 @@ export default function ProfilePage() {
                     className="flex-1 flex items-center justify-center space-x-2 bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors disabled:bg-orange-400 disabled:cursor-not-allowed"
                   >
                     <Save className="w-5 h-5" />
-                    <span>{saving ? 'Guardando...' : 'Guardar Cambios'}</span>
+                    <span>{saving ? "Guardando..." : "Guardar Cambios"}</span>
                   </button>
                   <button
                     onClick={handleCancel}

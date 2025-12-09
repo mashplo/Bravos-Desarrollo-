@@ -1,4 +1,3 @@
-
 const API_BASE = import.meta.env.VITE_API_URL;
 const API = `${API_BASE}/api/auth`;
 
@@ -19,14 +18,18 @@ async function handleResponse(res) {
   } catch {
     return { success: false, message: "Respuesta inválida del servidor" };
   }
-  
+
   // Manejar caso especial de conflicto de sesión (409)
   if (res.status === 409 && data.requireConfirmation) {
     return data;
   }
-  
+
   if (!res.ok) {
-    return { success: false, message: data?.message || "Error del servidor", ...data };
+    return {
+      success: false,
+      message: data?.message || "Error del servidor",
+      ...data,
+    };
   }
   return data;
 }
@@ -37,11 +40,17 @@ export async function registrar_usuario({ nombre, email, password, username }) {
     const res = await fetch(`${API}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombre, email, password, username, deviceId, deviceType: "web" })
+      body: JSON.stringify({
+        nombre,
+        email,
+        password,
+        username,
+        deviceId,
+        deviceType: "web",
+      }),
     });
 
     return await handleResponse(res);
-
   } catch (error) {
     console.error("Error registrar_usuario:", error);
     return { success: false, message: "Error de conexión al servidor" };
@@ -54,7 +63,7 @@ export async function iniciar_sesion({ email, password }) {
     const res = await fetch(`${API}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, deviceId, deviceType: "web" })
+      body: JSON.stringify({ email, password, deviceId, deviceType: "web" }),
     });
 
     const data = await handleResponse(res);
@@ -70,7 +79,6 @@ export async function iniciar_sesion({ email, password }) {
     }
 
     return data;
-
   } catch (err) {
     console.error("Error iniciar_sesion:", err);
     return { success: false, message: "Error de conexión al servidor" };
@@ -83,7 +91,13 @@ export async function iniciar_sesion_forzado({ email, password }) {
     const res = await fetch(`${API}/login/force`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, deviceId, deviceType: "web", forceLogin: true })
+      body: JSON.stringify({
+        email,
+        password,
+        deviceId,
+        deviceType: "web",
+        forceLogin: true,
+      }),
     });
 
     const data = await handleResponse(res);
@@ -94,7 +108,6 @@ export async function iniciar_sesion_forzado({ email, password }) {
     }
 
     return data;
-
   } catch (err) {
     console.error("Error iniciar_sesion_forzado:", err);
     return { success: false, message: "Error de conexión al servidor" };
@@ -105,20 +118,19 @@ export async function cerrar_sesion_backend() {
   try {
     const token = localStorage.getItem("token");
     const deviceId = getDeviceId();
-    
+
     if (!token) return { success: true };
 
     const res = await fetch(`${API}/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ deviceId })
+      body: JSON.stringify({ deviceId }),
     });
 
     return await handleResponse(res);
-
   } catch (err) {
     console.error("Error cerrar_sesion_backend:", err);
     return { success: false, message: "Error de conexión al servidor" };
@@ -140,12 +152,12 @@ export function handleSessionExpired(response) {
 // Helper para hacer requests autenticados
 export async function authenticatedFetch(url, options = {}) {
   const token = localStorage.getItem("token");
-  
+
   const headers = {
     "Content-Type": "application/json",
     ...options.headers,
   };
-  
+
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
@@ -153,13 +165,13 @@ export async function authenticatedFetch(url, options = {}) {
   try {
     const res = await fetch(url, { ...options, headers });
     const data = await res.json();
-    
+
     // Si la sesión expiró, manejar el redirect
     if (res.status === 401 && data.sessionExpired) {
       handleSessionExpired(data);
       return { success: false, sessionExpired: true };
     }
-    
+
     return data;
   } catch (err) {
     console.error("Error en authenticatedFetch:", err);

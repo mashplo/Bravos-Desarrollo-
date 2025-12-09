@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { iniciar_sesion, iniciar_sesion_forzado } from "../herramientas/usuario_login";
+import {
+  iniciar_sesion,
+  iniciar_sesion_forzado,
+} from "../herramientas/usuario_login";
 import { toast, Toaster } from "sonner";
 
 export default function Login() {
@@ -18,7 +21,9 @@ export default function Login() {
   // Mostrar mensaje si la sesión expiró
   useEffect(() => {
     if (sessionExpired === "true") {
-      toast.warning("Tu sesión fue cerrada porque iniciaste sesión en otro dispositivo.");
+      toast.warning(
+        "Tu sesión fue cerrada porque iniciaste sesión en otro dispositivo."
+      );
     }
   }, [sessionExpired]);
 
@@ -144,7 +149,7 @@ export default function Login() {
             />
             <button
               type="button"
-              onClick={() => set_showPassword(p => !p)}
+              onClick={() => set_showPassword((p) => !p)}
               className="absolute top-1/2 -translate-y-1/2 right-2 btn btn-xs btn-ghost"
             >
               {showPassword ? "Ocultar" : "Ver"}
@@ -162,7 +167,8 @@ export default function Login() {
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
             <h3 className="text-xl font-bold mb-4">Sesión activa detectada</h3>
             <p className="text-gray-700 mb-6">
-              Tu cuenta está activa en otro dispositivo. ¿Deseas continuar aquí y cerrar la otra sesión?
+              Tu cuenta está activa en otro dispositivo. ¿Deseas continuar aquí
+              y cerrar la otra sesión?
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -171,10 +177,7 @@ export default function Login() {
               >
                 No
               </button>
-              <button
-                onClick={handleForceLogin}
-                className="btn btn-primary"
-              >
+              <button onClick={handleForceLogin} className="btn btn-primary">
                 Sí
               </button>
             </div>

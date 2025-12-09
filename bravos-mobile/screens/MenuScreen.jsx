@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-	View,
-	StyleSheet,
-	FlatList,
-	Image,
-	ImageBackground,
-	TouchableOpacity,
-	SafeAreaView,
-	Dimensions,
-	Platform,
-	Alert,
+  View,
+  StyleSheet,
+  FlatList,
+  Image,
+  ImageBackground,
+  TouchableOpacity,
+  SafeAreaView,
+  Dimensions,
+  Platform,
+  Alert,
 } from "react-native";
 import { Text, Card, Button, IconButton } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,19 +22,103 @@ const HEADER_IMAGE = require("../assets/ChatGPT Image 10 nov 2025, 10_21_18.png"
 // Productos de respaldo en caso de que la API falle
 const productosFallback = [
   // Hamburguesas
-  { id: 0, name: "Smash Burguer", price: 25.99, image_url: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80", category: "hamburguesas" },
-  { id: 1, name: "Bacon Burguer", price: 26.99, image_url: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800&auto=format&fit=crop&q=80", category: "hamburguesas" },
-  { id: 2, name: "Doble Carne", price: 27.99, image_url: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=800&auto=format&fit=crop&q=80", category: "hamburguesas" },
-  { id: 3, name: "Americana", price: 26.49, image_url: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop&q=80", category: "hamburguesas" },
-  { id: 4, name: "Carnívora", price: 28.99, image_url: "https://images.unsplash.com/photo-1551782450-17144efb9c50?w=800&auto=format&fit=crop&q=80", category: "hamburguesas" },
-  { id: 5, name: "Cheese Burguer", price: 28.99, image_url: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=800&auto=format&fit=crop&q=80", category: "hamburguesas" },
+  {
+    id: 0,
+    name: "Smash Burguer",
+    price: 25.99,
+    image_url:
+      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80",
+    category: "hamburguesas",
+  },
+  {
+    id: 1,
+    name: "Bacon Burguer",
+    price: 26.99,
+    image_url:
+      "https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800&auto=format&fit=crop&q=80",
+    category: "hamburguesas",
+  },
+  {
+    id: 2,
+    name: "Doble Carne",
+    price: 27.99,
+    image_url:
+      "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?w=800&auto=format&fit=crop&q=80",
+    category: "hamburguesas",
+  },
+  {
+    id: 3,
+    name: "Americana",
+    price: 26.49,
+    image_url:
+      "https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&auto=format&fit=crop&q=80",
+    category: "hamburguesas",
+  },
+  {
+    id: 4,
+    name: "Carnívora",
+    price: 28.99,
+    image_url:
+      "https://images.unsplash.com/photo-1551782450-17144efb9c50?w=800&auto=format&fit=crop&q=80",
+    category: "hamburguesas",
+  },
+  {
+    id: 5,
+    name: "Cheese Burguer",
+    price: 28.99,
+    image_url:
+      "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=800&auto=format&fit=crop&q=80",
+    category: "hamburguesas",
+  },
   // Bebidas
-  { id: 6, name: "Coca cola", price: 5.99, image_url: "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&auto=format&fit=crop&q=80", category: "bebidas" },
-  { id: 7, name: "Inka cola", price: 5.99, image_url: "https://mir-s3-cdn-cf.behance.net/projects/404/069e01209605969.Y3JvcCw0MjI1LDMzMDUsOTYyLDA.gif", category: "bebidas" },
-  { id: 8, name: "Pepsi", price: 5.49, image_url: "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=800&auto=format&fit=crop&q=80", category: "bebidas" },
-  { id: 9, name: "Jugo de Fresa", price: 7.99, image_url: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=800&auto=format&fit=crop&q=80", category: "bebidas" },
-  { id: 10, name: "Limonada", price: 6.99, image_url: "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=800&auto=format&fit=crop&q=80", category: "bebidas" },
-  { id: 11, name: "Agua Mineral", price: 3.99, image_url: "https://images.unsplash.com/photo-1560023907-5f339617ea30?w=800&auto=format&fit=crop&q=80", category: "bebidas" },
+  {
+    id: 6,
+    name: "Coca cola",
+    price: 5.99,
+    image_url:
+      "https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800&auto=format&fit=crop&q=80",
+    category: "bebidas",
+  },
+  {
+    id: 7,
+    name: "Inka cola",
+    price: 5.99,
+    image_url:
+      "https://mir-s3-cdn-cf.behance.net/projects/404/069e01209605969.Y3JvcCw0MjI1LDMzMDUsOTYyLDA.gif",
+    category: "bebidas",
+  },
+  {
+    id: 8,
+    name: "Pepsi",
+    price: 5.49,
+    image_url:
+      "https://images.unsplash.com/photo-1629203851122-3726ecdf080e?w=800&auto=format&fit=crop&q=80",
+    category: "bebidas",
+  },
+  {
+    id: 9,
+    name: "Jugo de Fresa",
+    price: 7.99,
+    image_url:
+      "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=800&auto=format&fit=crop&q=80",
+    category: "bebidas",
+  },
+  {
+    id: 10,
+    name: "Limonada",
+    price: 6.99,
+    image_url:
+      "https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=800&auto=format&fit=crop&q=80",
+    category: "bebidas",
+  },
+  {
+    id: 11,
+    name: "Agua Mineral",
+    price: 3.99,
+    image_url:
+      "https://images.unsplash.com/photo-1560023907-5f339617ea30?w=800&auto=format&fit=crop&q=80",
+    category: "bebidas",
+  },
 ];
 
 export default function MenuScreen({ navigation, route }) {
@@ -80,7 +164,7 @@ export default function MenuScreen({ navigation, route }) {
       }
       return [...prev, { ...item, qty: 1 }];
     });
-    
+
     // Restaurar posición del scroll de bebidas después de agregar
     setTimeout(() => {
       if (bebidasListRef.current && bebidasScrollPosition.current > 0) {
@@ -139,39 +223,35 @@ export default function MenuScreen({ navigation, route }) {
   );
 
   const handleLogout = () => {
-    Alert.alert(
-      "Cerrar sesión",
-      "¿Estás seguro de que deseas cerrar sesión?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel",
-        },
-        {
-          text: "Sí",
-          onPress: async () => {
-            try {
-              const deviceId = await AsyncStorage.getItem("deviceId");
-              const token = await AsyncStorage.getItem("jwt");
-              
-              // Cerrar sesión en el backend
-              if (token) {
-                await api.post("/auth/logout", { deviceId });
-              }
-            } catch (error) {
-              console.error("Error cerrando sesión en backend:", error);
+    Alert.alert("Cerrar sesión", "¿Estás seguro de que deseas cerrar sesión?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Sí",
+        onPress: async () => {
+          try {
+            const deviceId = await AsyncStorage.getItem("deviceId");
+            const token = await AsyncStorage.getItem("jwt");
+
+            // Cerrar sesión en el backend
+            if (token) {
+              await api.post("/auth/logout", { deviceId });
             }
-            
-            await AsyncStorage.removeItem("jwt");
-            await AsyncStorage.removeItem("user");
-            navigation.reset({
-              index: 0,
-              routes: [{ name: "Welcome" }],
-            });
-          },
+          } catch (error) {
+            console.error("Error cerrando sesión en backend:", error);
+          }
+
+          await AsyncStorage.removeItem("jwt");
+          await AsyncStorage.removeItem("user");
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Welcome" }],
+          });
         },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
@@ -271,7 +351,9 @@ export default function MenuScreen({ navigation, route }) {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.bebidasList}
-                ListEmptyComponent={<Text style={{padding:12}}>Sin bebidas</Text>}
+                ListEmptyComponent={
+                  <Text style={{ padding: 12 }}>Sin bebidas</Text>
+                }
                 onScroll={(e) => {
                   bebidasScrollPosition.current = e.nativeEvent.contentOffset.x;
                 }}

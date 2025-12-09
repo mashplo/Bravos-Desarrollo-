@@ -18,7 +18,7 @@ export default function Navbar() {
     try {
       const res = await fetch(`${API_BASE}/api/auth/verify-session`, {
         method: "GET",
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
 
@@ -26,7 +26,9 @@ export default function Navbar() {
         localStorage.removeItem("token");
         localStorage.removeItem("usuario_actual");
         set_usuario_actual(null);
-        toast.warning("Tu sesión fue cerrada porque iniciaste sesión en otro dispositivo.");
+        toast.warning(
+          "Tu sesión fue cerrada porque iniciaste sesión en otro dispositivo."
+        );
         window.location.href = "/login?sessionExpired=true";
       }
     } catch (err) {
@@ -39,7 +41,7 @@ export default function Navbar() {
 
     // Verificar sesión cada 10 segundos
     const intervalId = setInterval(checkSession, 10000);
-    
+
     // Verificar cuando la ventana vuelve a tener foco
     const handleFocus = () => checkSession();
     window.addEventListener("focus", handleFocus);
@@ -56,7 +58,9 @@ export default function Navbar() {
   };
 
   const handleCerrarSesion = async () => {
-    const confirmacion = window.confirm("¿Estás seguro de que deseas cerrar sesión?");
+    const confirmacion = window.confirm(
+      "¿Estás seguro de que deseas cerrar sesión?"
+    );
     if (!confirmacion) {
       return;
     }
@@ -106,8 +110,9 @@ export default function Navbar() {
             <span className="text-sm font-medium">
               Hola, {usuario_actual.nombre}
             </span>
-            
-            <a  href="/profile"
+
+            <a
+              href="/profile"
               className="p-2 rounded-full hover:bg-gray-200 transition-colors"
               title="Mi Perfil"
             >

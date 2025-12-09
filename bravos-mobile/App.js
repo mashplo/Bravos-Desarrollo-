@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -77,8 +76,16 @@ export default function App() {
           <Stack.Screen name="Menu" component={MenuScreen} />
           <Stack.Screen name="OrderSummary" component={OrderSummaryScreen} />
           <Stack.Screen name="Reviews" component={ReviewsScreen} />
-          <Stack.Screen name="Historial" component={HistorialScreen} options={{ title: "Mi Historial" }} />
-          <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: "Mi Perfil", headerShown: false }} />
+          <Stack.Screen
+            name="Historial"
+            component={HistorialScreen}
+            options={{ title: "Mi Historial" }}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={ProfileScreen}
+            options={{ title: "Mi Perfil", headerShown: false }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>

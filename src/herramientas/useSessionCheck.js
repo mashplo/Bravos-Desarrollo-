@@ -8,15 +8,15 @@ export function useSessionCheck(intervalMs = 10000) {
 
   const checkSession = useCallback(async () => {
     const token = localStorage.getItem("token");
-    
+
     if (!token) return;
 
     try {
       const res = await fetch(`${API_BASE}/api/auth/verify-session`, {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       const data = await res.json();
