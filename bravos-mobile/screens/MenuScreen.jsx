@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   StyleSheet,
@@ -10,9 +10,11 @@ import {
   Dimensions,
   Platform,
   Alert,
+  BackHandler,
 } from "react-native";
 import { Text, Card, Button, IconButton } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 import RdfButton from "../components/RdfButton";
 import { getProductos } from "../services/api";
 
@@ -128,6 +130,22 @@ export default function MenuScreen({ navigation, route }) {
   const bebidasListRef = useRef(null);
   const bebidasScrollPosition = useRef(0);
   const [orderSuccessVisible, setOrderSuccessVisible] = useState(false);
+
+  // Bloquear botón de retroceso físico - solo logout debería funcionar
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        // Retornar true significa que manejamos el evento (lo bloqueamos)
+        return true;
+      };
+
+      const subscription = BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      return () => {
+        subscription.remove();
+      };
+    }, [])
+  );
 
   useEffect(() => {
     // Cargar productos desde la API

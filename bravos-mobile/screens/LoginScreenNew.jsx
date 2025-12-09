@@ -137,7 +137,7 @@ export default function LoginScreenNew({ navigation }) {
 
       <View style={styles.content}>
         <Text variant="titleLarge" style={styles.subtitle}>
-          {"Descrubre lo mejor en\nBravos con solo un clic"}
+          {"Descubre lo mejor en\nBravos con solo un clic"}
         </Text>
 
         <TextInput

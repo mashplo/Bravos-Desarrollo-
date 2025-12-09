@@ -81,12 +81,12 @@ export default function Navbar() {
         <ul className="flex flex-row gap-6">
           <li>
             <a href="/" className="text-gray-800 hover:text-black">
-              Home
+              Inicio
             </a>
           </li>
           <li>
             <a href="/menu" className="text-gray-800 hover:text-black">
-              Pide aquí
+              Menú
             </a>
           </li>
           <li>

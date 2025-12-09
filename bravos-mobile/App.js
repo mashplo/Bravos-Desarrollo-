@@ -73,7 +73,11 @@ export default function App() {
           />
           <Stack.Screen name="Register" component={RegisterScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Menu" component={MenuScreen} />
+          <Stack.Screen 
+            name="Menu" 
+            component={MenuScreen} 
+            options={{ headerShown: false }}
+          />
           <Stack.Screen name="OrderSummary" component={OrderSummaryScreen} />
           <Stack.Screen name="Reviews" component={ReviewsScreen} />
           <Stack.Screen

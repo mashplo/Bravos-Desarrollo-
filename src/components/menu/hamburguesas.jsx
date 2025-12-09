@@ -37,7 +37,7 @@ export default function Hamburguesas() {
                             <div className="card-actions justify-between items-center mt-2">
                                 <span className="text-2xl font-bold">S/{hamburguesa.price}</span>
                                 <button 
-                                    onClick={() => pedir(index)} 
+                                    onClick={() => pedir(hamburguesa.id)} 
                                     className="btn btn-primary"
                                 >
                                     Pedir

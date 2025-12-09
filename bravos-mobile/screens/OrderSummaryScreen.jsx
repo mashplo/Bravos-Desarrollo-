@@ -143,7 +143,7 @@ export default function OrderSummaryScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <Text variant="headlineSmall" style={styles.headerTitle}>
-        My order
+        Mi Orden
       </Text>
 
       <FlatList
