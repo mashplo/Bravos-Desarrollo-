@@ -15,3 +15,6 @@ export function verifyToken(req, res, next) {
     return res.status(403).json({ message: "Token inválido" });
   }
 }
+
+// Alias para compatibilidad
+export const authMiddleware = verifyToken;
