@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { AlertCircle, CheckCircle, User, Mail, Lock, Edit2, Save, X, AtSign, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/navbar';
 import { obtener_perfil, actualizar_perfil } from '../herramientas/perfil';
 import { toast } from 'sonner';
+import { useSessionCheck } from '../herramientas/useSessionCheck';
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -10,6 +12,10 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const navigate = useNavigate();
+  
+  // Verificar sesión cada 10 segundos
+  useSessionCheck(10000);
   
   const [formData, setFormData] = useState({
     nombre: '',
@@ -30,6 +36,13 @@ export default function ProfilePage() {
       const response = await obtener_perfil();
       
       if (!response.success) {
+        // Verificar si la sesión expiró
+        if (response.sessionExpired) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("usuario_actual");
+          navigate("/login?sessionExpired=true");
+          return;
+        }
         throw new Error(response.message);
       }
       

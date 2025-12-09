@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react"
 import { Package, Clock, Truck, CheckCircle } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
+import { useSessionCheck } from "../herramientas/useSessionCheck"
 
 export default function Historial() {
   const [pedidos, setPedidos] = useState([])
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
+  
+  // Verificar sesión cada 10 segundos
+  useSessionCheck(10000)
 
   useEffect(() => {
     cargarHistorial()
@@ -15,7 +21,7 @@ export default function Historial() {
     try {
       const token = localStorage.getItem("token")
       if (!token) {
-        window.location.href = "/login"
+        navigate("/login")
         return
       }
 
@@ -27,6 +33,15 @@ export default function Historial() {
       })
 
       const data = await response.json()
+      
+      // Verificar si la sesión expiró
+      if (response.status === 401 && data.sessionExpired) {
+        localStorage.removeItem("token")
+        localStorage.removeItem("usuario_actual")
+        navigate("/login?sessionExpired=true")
+        return
+      }
+      
       if (data.success) {
         setPedidos(data.pedidos)
       }

@@ -1,10 +1,16 @@
 import { Hamburger, UserCircle } from "lucide-react"
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { get_pedidos, actualizar_estado_pedido } from "../herramientas/usuario"
+import { useSessionCheck } from "../herramientas/useSessionCheck"
 
 export default function Pendings() {
   const [pedidos_pendientes, set_pedidos_pendientes] = useState([])
   const [pedidos_entregados, set_pedidos_entregados] = useState([])
+  const navigate = useNavigate()
+  
+  // Verificar sesión cada 10 segundos
+  useSessionCheck(10000)
 
   useEffect(() => {
     cargar_pedidos()
