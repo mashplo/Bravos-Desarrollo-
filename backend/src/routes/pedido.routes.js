@@ -1,0 +1,26 @@
+
+import { Router } from "express";
+import { crearPedido, obtenerPedidosConDetalles, actualizarEstadoPedido, borrarPedidosEntregados, obtenerHistorialCliente, reiniciarContadorPedidos } from "../controllers/pedido.controller.js";
+import { verifyToken } from "../middlewares/auth.js";
+
+const router = Router();
+
+// POST /api/pedidos/  -> crear un pedido (requiere JWT)
+router.post("/", verifyToken, crearPedido);
+
+// GET /api/pedidos/  -> obtener todos los pedidos con detalles (requiere JWT)
+router.get("/", verifyToken, obtenerPedidosConDetalles);
+
+// GET /api/pedidos/historial  -> obtener historial del cliente autenticado
+router.get("/historial", verifyToken, obtenerHistorialCliente);
+
+// PUT /api/pedidos/:id/estado -> actualizar el estado del pedido (requiere JWT)
+router.put("/:id/estado", verifyToken, actualizarEstadoPedido);
+
+// DELETE /api/pedidos/entregados -> borrar pedidos entregados (requiere JWT)
+router.delete("/entregados", verifyToken, borrarPedidosEntregados);
+
+// POST /api/pedidos/reset-counter -> SOLO ADMIN - reiniciar contador de pedidos
+router.post("/reset-counter", verifyToken, reiniciarContadorPedidos);
+
+export default router;
