@@ -69,16 +69,31 @@ export default function OrderSummaryScreen({ navigation, route }) {
         total,
         metodo_pago: selectedPayment,
       });
-      console.log("Pedido creado:", res.data);
       setPedido([]);
       setShowModal(false);
       navigation.navigate("Menu", { orderSuccess: true, clearCart: true });
     } catch (err) {
-      console.error("Error creando pedido:", err.response?.data || err.message);
-      Alert.alert(
-        "Error",
-        err.response?.data?.message || "No se pudo crear el pedido"
-      );
+      // Manejar error de sesión expirada
+      if (err.response?.status === 401) {
+        Alert.alert(
+          "Sesión expirada",
+          "Tu sesión ha expirado. Por favor inicia sesión nuevamente.",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.reset({
+                index: 0,
+                routes: [{ name: "Login" }],
+              }),
+            },
+          ]
+        );
+        return;
+      }
+      
+      // Otros errores
+      const errorMessage = err.response?.data?.message || "No se pudo crear el pedido. Verifica tu conexión e intenta de nuevo.";
+      Alert.alert("Error", errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -149,7 +164,8 @@ export default function OrderSummaryScreen({ navigation, route }) {
       <View style={styles.orderWrap}>
         <Button
           mode="contained"
-          buttonColor="#e6c9a0"
+          buttonColor="#d97706"
+          labelStyle={{ color: "#000", fontWeight: "700" }}
           contentStyle={{ height: 50 }}
           style={styles.orderButton}
           onPress={() => {
@@ -164,27 +180,6 @@ export default function OrderSummaryScreen({ navigation, route }) {
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
             <Text style={styles.modalTitle}>Finalizar Compra</Text>
-
-            <View style={styles.stepsRow}>
-              <View style={styles.stepItem}>
-                <View style={styles.stepCircle}>
-                  <Text style={styles.stepNumber}>1</Text>
-                </View>
-                <Text style={styles.stepLabel}>Seleccionar Productos</Text>
-              </View>
-              <View style={styles.stepItem}>
-                <View style={styles.stepCircle}>
-                  <Text style={styles.stepNumber}>2</Text>
-                </View>
-                <Text style={styles.stepLabel}>Calcular Subtotal</Text>
-              </View>
-              <View style={styles.stepItem}>
-                <View style={styles.stepCircle}>
-                  <Text style={styles.stepNumber}>3</Text>
-                </View>
-                <Text style={styles.stepLabel}>Realizar Pago</Text>
-              </View>
-            </View>
 
             <View style={styles.modalSummary}>
               <Text style={{ color: "#8b6b53" }}>Resumen de compra</Text>
@@ -246,7 +241,8 @@ export default function OrderSummaryScreen({ navigation, route }) {
               </TouchableOpacity>
               <Button
                 mode="contained"
-                buttonColor="#000"
+                buttonColor="#d97706"
+                labelStyle={{ color: "#000", fontWeight: "700" }}
                 onPress={handleSubmitOrder}
                 disabled={submitting}
                 contentStyle={{ height: 44 }}

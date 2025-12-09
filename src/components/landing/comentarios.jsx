@@ -44,6 +44,12 @@ export default function Comentarios() {
             return
         }
 
+        // Validar mínimo 5 caracteres
+        if (comentario.trim().length < 5) {
+            toast.error("La reseña debe tener al menos 5 caracteres")
+            return
+        }
+
         const resultado = await crear_resena({
             comentario: comentario,
             calificacion: calificacion

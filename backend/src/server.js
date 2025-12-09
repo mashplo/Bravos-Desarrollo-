@@ -15,7 +15,9 @@ if (!process.env.JWT_SECRET) {
     console.error("❌ FATAL: JWT_SECRET no está configurado en producción");
     process.exit(1);
   } else {
-    console.warn("⚠️ ADVERTENCIA: JWT_SECRET no configurado. Usando valor de desarrollo.");
+    console.warn(
+      "⚠️ ADVERTENCIA: JWT_SECRET no configurado. Usando valor de desarrollo."
+    );
     process.env.JWT_SECRET = "dev_secret_only_for_local_development";
   }
 }
@@ -170,24 +172,24 @@ app.use((req, res, next) => {
   res.status(404).json({
     error: "Recurso no encontrado",
     path: req.originalUrl,
-    method: req.method
+    method: req.method,
   });
 });
 
 // Manejador de errores global
 app.use((err, req, res, next) => {
   console.error("❌ Error no manejado:", err);
-  
+
   // No exponer detalles del error en producción
   const errorResponse = {
-    error: "Error interno del servidor"
+    error: "Error interno del servidor",
   };
-  
+
   if (!isProduction) {
     errorResponse.message = err.message;
     errorResponse.stack = err.stack;
   }
-  
+
   res.status(err.status || 500).json(errorResponse);
 });
 

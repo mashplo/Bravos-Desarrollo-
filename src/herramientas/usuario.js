@@ -195,11 +195,19 @@ export async function actualizar_estado_pedido({ id, nuevo_estado }) {
 // =====================================================
 
 export async function cerrar_sesion() {
-  // Llamar al backend para cerrar sesión
-  try {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const deviceId = localStorage.getItem("deviceId");
+  // Primero limpiar localStorage para garantizar cierre local
+  const token = localStorage.getItem("token");
+  const deviceId = localStorage.getItem("deviceId");
+  
+  // Limpiar inmediatamente el storage local
+  localStorage.removeItem("usuario_actual");
+  localStorage.removeItem("token");
+  localStorage.removeItem("carrito");
+  localStorage.removeItem("pedidos");
+  
+  // Luego intentar notificar al backend (sin bloquear)
+  if (token) {
+    try {
       const backend = import.meta.env.VITE_API_URL;
       await fetch(`${backend}/api/auth/logout`, {
         method: "POST",
@@ -208,14 +216,12 @@ export async function cerrar_sesion() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ deviceId }),
-      });
+      }).catch(() => {});
+    } catch {
+      // Ignorar errores del backend - la sesión ya está cerrada localmente
     }
-  } catch (error) {
-    console.error("Error cerrando sesión en backend:", error);
   }
-
-  localStorage.removeItem("usuario_actual");
-  localStorage.removeItem("token");
+  
   return { success: true, message: "Sesión cerrada" };
 }
 

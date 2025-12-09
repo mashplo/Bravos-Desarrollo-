@@ -29,10 +29,21 @@ export default function ReviewsScreen() {
   }, []);
 
   const handleAddReview = async () => {
-    if (!newReview.trim() || rating === 0) {
-      Alert.alert("Atención", "Por favor escribe tu reseña y selecciona un puntaje");
+    if (!newReview.trim()) {
+      Alert.alert("Atención", "Por favor escribe tu reseña");
       return;
     }
+    
+    if (newReview.trim().length < 5) {
+      Alert.alert("Atención", "La reseña debe tener al menos 5 caracteres");
+      return;
+    }
+    
+    if (rating === 0) {
+      Alert.alert("Atención", "Por favor selecciona un puntaje");
+      return;
+    }
+    
     try {
       console.log("Enviando reseña:", { comentario: newReview, calificacion: rating });
       const response = await api.post("/resenas", { comentario: newReview, calificacion: rating });

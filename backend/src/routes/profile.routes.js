@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { getProfile, updateProfile } from "../controllers/profile.controller.js";
+import {
+  getProfile,
+  updateProfile,
+} from "../controllers/profile.controller.js";
 import { verifyToken } from "../middlewares/auth.js";
 import { validateProfileUpdate } from "../validators/index.js";
 

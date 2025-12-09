@@ -39,7 +39,9 @@ export const validateRegister = [
     .isLength({ min: 3, max: 30 })
     .withMessage("El username debe tener entre 3 y 30 caracteres")
     .matches(/^[a-zA-Z0-9_]+$/)
-    .withMessage("El username solo puede contener letras, números y guión bajo"),
+    .withMessage(
+      "El username solo puede contener letras, números y guión bajo"
+    ),
   body("password")
     .notEmpty()
     .withMessage("La contraseña es requerida")
@@ -125,7 +127,9 @@ export const validateProfileUpdate = [
     .isLength({ min: 3, max: 30 })
     .withMessage("El username debe tener entre 3 y 30 caracteres")
     .matches(/^[a-zA-Z0-9_]+$/)
-    .withMessage("El username solo puede contener letras, números y guión bajo"),
+    .withMessage(
+      "El username solo puede contener letras, números y guión bajo"
+    ),
   body("newPassword")
     .optional()
     .isLength({ min: 6 })

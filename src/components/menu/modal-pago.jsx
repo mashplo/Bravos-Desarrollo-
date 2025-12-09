@@ -108,7 +108,7 @@ export default function ModalPago({ carrito_items, total, onCompraExitosa }) {
 
   return (
     <>
-      <button onClick={abrirModal} className="btn btn-primary w-full">
+      <button onClick={abrirModal} className="btn bg-amber-500 hover:bg-amber-600 text-black font-bold w-full">
         Realizar Compra
       </button>
 
@@ -163,7 +163,7 @@ export default function ModalPago({ carrito_items, total, onCompraExitosa }) {
             <form method="dialog">
               <button className="btn btn-ghost mr-2">Cancelar</button>
             </form>
-            <button onClick={handlePagar} className="btn btn-primary">
+            <button onClick={handlePagar} className="btn btn-warning text-black font-bold hover:bg-yellow-600">
               Pagar S/{total.toFixed(2)}
             </button>
           </div>

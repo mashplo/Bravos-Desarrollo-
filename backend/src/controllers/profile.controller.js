@@ -26,7 +26,9 @@ export const getProfile = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado" });
     }
 
     return res.json({
@@ -41,7 +43,9 @@ export const getProfile = async (req, res) => {
     });
   } catch (error) {
     console.error("Error en getProfile:", error);
-    return res.status(500).json({ success: false, message: "Error interno del servidor" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Error interno del servidor" });
   }
 };
 
@@ -55,22 +59,30 @@ export const updateProfile = async (req, res) => {
 
     const user = await User.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "Usuario no encontrado" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado" });
     }
 
     // Verificar email único si se está cambiando
     if (email && email !== user.correo) {
       const emailExists = await User.findOne({ where: { correo: email } });
       if (emailExists) {
-        return res.status(400).json({ success: false, message: "El correo ya está en uso" });
+        return res
+          .status(400)
+          .json({ success: false, message: "El correo ya está en uso" });
       }
     }
 
     // Verificar username único si se está cambiando
     if (username && username !== user.usuario) {
-      const usernameExists = await User.findOne({ where: { usuario: username } });
+      const usernameExists = await User.findOne({
+        where: { usuario: username },
+      });
       if (usernameExists) {
-        return res.status(400).json({ success: false, message: "El username ya está en uso" });
+        return res
+          .status(400)
+          .json({ success: false, message: "El username ya está en uso" });
       }
     }
 
@@ -83,7 +95,10 @@ export const updateProfile = async (req, res) => {
         });
       }
 
-      const isValidPassword = await comparePassword(currentPassword, user.password);
+      const isValidPassword = await comparePassword(
+        currentPassword,
+        user.password
+      );
       if (!isValidPassword) {
         return res.status(400).json({
           success: false,
@@ -115,6 +130,8 @@ export const updateProfile = async (req, res) => {
     });
   } catch (error) {
     console.error("Error en updateProfile:", error);
-    return res.status(500).json({ success: false, message: "Error interno del servidor" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Error interno del servidor" });
   }
 };

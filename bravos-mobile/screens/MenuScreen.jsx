@@ -231,20 +231,27 @@ export default function MenuScreen({ navigation, route }) {
       {
         text: "Sí",
         onPress: async () => {
-          try {
-            const deviceId = await AsyncStorage.getItem("deviceId");
-            const token = await AsyncStorage.getItem("jwt");
+          // Primero obtener datos necesarios
+          const deviceId = await AsyncStorage.getItem("deviceId");
+          const token = await AsyncStorage.getItem("jwt");
 
-            // Cerrar sesión en el backend
-            if (token) {
-              await api.post("/auth/logout", { deviceId });
-            }
-          } catch (error) {
-            console.error("Error cerrando sesión en backend:", error);
-          }
-
+          // Limpiar storage local INMEDIATAMENTE
           await AsyncStorage.removeItem("jwt");
           await AsyncStorage.removeItem("user");
+          
+          // Limpiar carrito
+          setCart([]);
+
+          // Intentar notificar al backend (sin bloquear)
+          if (token) {
+            try {
+              await api.post("/auth/logout", { deviceId }).catch(() => {});
+            } catch {
+              // Ignorar errores - la sesión ya está cerrada localmente
+            }
+          }
+
+          // Navegar a Welcome
           navigation.reset({
             index: 0,
             routes: [{ name: "Welcome" }],

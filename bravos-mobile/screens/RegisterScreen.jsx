@@ -35,6 +35,12 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
+    // Validar que username no sea igual al nombre
+    if (username.trim().toLowerCase() === nombre.trim().toLowerCase()) {
+      Alert.alert("Error", "El nombre de usuario no puede ser igual al nombre real");
+      return;
+    }
+
     setLoading(true);
     try {
       console.log("Registrando usuario:", { nombre, username, email });

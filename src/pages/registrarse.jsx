@@ -29,6 +29,12 @@ export default function Registrarse() {
             return
         }
 
+        // Validar que username no sea igual al nombre
+        if (username.trim().toLowerCase() === nombre.trim().toLowerCase()) {
+            toast.error("El nombre de usuario no puede ser igual al nombre real")
+            return
+        }
+
         const resultado = await registrar_usuario({
             nombre,
             email,

@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import {
   crearPedido,
@@ -26,9 +25,19 @@ router.get("/historial", verifyToken, obtenerHistorialCliente);
 router.put("/:id/estado", verifyToken, requireAdmin, actualizarEstadoPedido);
 
 // DELETE /api/pedidos/entregados -> borrar pedidos entregados (SOLO ADMIN)
-router.delete("/entregados", verifyToken, requireAdmin, borrarPedidosEntregados);
+router.delete(
+  "/entregados",
+  verifyToken,
+  requireAdmin,
+  borrarPedidosEntregados
+);
 
 // POST /api/pedidos/reset-counter -> reiniciar contador (SOLO ADMIN)
-router.post("/reset-counter", verifyToken, requireAdmin, reiniciarContadorPedidos);
+router.post(
+  "/reset-counter",
+  verifyToken,
+  requireAdmin,
+  reiniciarContadorPedidos
+);
 
 export default router;
