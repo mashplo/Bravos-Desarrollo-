@@ -1,8 +1,9 @@
 import { Hamburger, UserCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { get_pedidos, actualizar_estado_pedido } from "../herramientas/usuario";
+import { get_pedidos, actualizar_estado_pedido, cerrar_sesion } from "../herramientas/usuario";
 import { useSessionCheck } from "../herramientas/useSessionCheck";
+import { toast } from "sonner";
 
 export default function Pendings() {
   const [pedidos_pendientes, set_pedidos_pendientes] = useState([]);
@@ -79,15 +80,15 @@ export default function Pendings() {
     cargar_pedidos();
   };
 
-  const cerrar_sesion = () => {
+  const handleCerrarSesion = async () => {
     const confirmacion = window.confirm(
       "¿Estás seguro de que deseas cerrar sesión?"
     );
     if (!confirmacion) {
       return;
     }
-    localStorage.removeItem("usuario_actual");
-    localStorage.removeItem("token");
+    await cerrar_sesion();
+    toast.success("Sesión cerrada exitosamente");
     window.location.href = "/login";
   };
 
@@ -145,7 +146,7 @@ export default function Pendings() {
           >
             Reiniciar Contador
           </button>
-          <button className="btn btn-error" onClick={cerrar_sesion}>
+          <button className="btn btn-error" onClick={handleCerrarSesion}>
             Cerrar sesión
           </button>
         </div>
